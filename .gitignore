@@ -4,6 +4,22 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+**/target
+**/**/target
+.repository
+.idea
+.project
+.settings
+.classpath
+*.iml
+.vscode
+.DS_Store
+docker/.m2
+.sts4-cache
+/.java-version
+.gradle
+build/
+
 ### STS ###
 .apt_generated
 .classpath
