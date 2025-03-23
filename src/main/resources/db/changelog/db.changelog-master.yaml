@@ -1,6 +1,3 @@
 databaseChangeLog:
-  - changeSet:
-      id: 1
-      author: bestdev
-      changes:
-        -
+  - include:
+      file: db/changelog/001-ddl-definition.sql
