@@ -17,7 +17,7 @@ target/
 docker/.m2
 .sts4-cache
 /.java-version
-.gradle
+.gradle/
 build/
 
 ### STS ###
