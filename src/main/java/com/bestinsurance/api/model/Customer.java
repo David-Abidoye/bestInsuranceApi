@@ -2,8 +2,12 @@ package com.bestinsurance.api.model;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
@@ -22,6 +26,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "CUSTOMERS")
+@EntityListeners(AuditingEntityListener.class)
 public class Customer {
 
     @Id
@@ -41,11 +46,11 @@ public class Customer {
     @Column(nullable = false)
     private String email;
 
-    @NotNull
+    @CreatedDate
     @Column(name = "CREATED", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
-    @NotNull
+    @LastModifiedDate
     @Column(name = "UPDATED", nullable = false)
     private OffsetDateTime updatedAt;
 

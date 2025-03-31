@@ -5,9 +5,13 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -27,6 +31,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "POLICIES")
+@EntityListeners(AuditingEntityListener.class)
 public class Policy {
 
     @Id
@@ -44,11 +49,11 @@ public class Policy {
     @Column(precision = 4, scale = 2, nullable = false)
     private BigDecimal price;
 
-    @NotNull
+    @CreatedDate
     @Column(name="CREATED", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
-    @NotNull
+    @LastModifiedDate
     @Column(name="UPDATED", nullable = false)
     private OffsetDateTime updatedAt;
 
