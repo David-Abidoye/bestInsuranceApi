@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "SUBSCRIPTIONS")
 @EntityListeners(AuditingEntityListener.class)
-public class Subcription {
+public class Subscription {
 
     @EmbeddedId
     @EqualsAndHashCode.Include
