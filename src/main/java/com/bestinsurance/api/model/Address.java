@@ -3,6 +3,8 @@ package com.bestinsurance.api.model;
 import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -24,6 +26,7 @@ import lombok.NoArgsConstructor;
 public class Address {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "ADDRESS_ID")
     @EqualsAndHashCode.Include
     private UUID id;

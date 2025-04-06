@@ -12,6 +12,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -35,6 +37,7 @@ import lombok.NoArgsConstructor;
 public class Policy {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "POLICY_ID")
     @EqualsAndHashCode.Include
     private UUID id;
@@ -61,5 +64,6 @@ public class Policy {
     @JoinTable(name = "POLICY_COVERAGES",
             joinColumns = @JoinColumn(name = "POLICY_ID"),
             inverseJoinColumns = @JoinColumn(name = "COVERAGE_ID"))
+    @Builder.Default
     private List<Coverage> coverages = new ArrayList<>();
 }
