@@ -1,6 +1,5 @@
 databaseChangeLog:
-  - changeSet:
-      id: 1
-      author: bestdev
-      changes:
-        -
+  - include:
+      file: db/changelog/001-ddl-definition.sql
+  - include:
+      file: db/changelog/002-alter-customer-table.sql
