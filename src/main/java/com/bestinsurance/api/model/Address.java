@@ -32,10 +32,10 @@ public class Address {
     private UUID id;
 
     @NotNull
-    @Column(name = "ADDRESS", nullable = false)
+    @Column(name = "ADDRESS", nullable = false, length = 128)
     private String addressLine;
 
-    @Column(name = "POSTAL_CODE")
+    @Column(name = "POSTAL_CODE", length = 16)
     private String postalCode;
 
     @NotNull

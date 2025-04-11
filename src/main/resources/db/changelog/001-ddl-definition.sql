@@ -53,7 +53,7 @@ create table policies
     policy_id   uuid primary key default uuid_generate_v4(),
     name        varchar(16)              not null,
     description text,
-    price       numeric(4, 2)            not null,
+    price       numeric(6, 2)            not null,
     created     timestamp with time zone not null,
     updated     timestamp with time zone not null
 );
@@ -65,7 +65,7 @@ create table subscriptions
     primary key (policy_id, customer_id),
     start_date  date                                    not null,
     end_date    date                                    not null,
-    paid_price  numeric(4, 2)                           not null,
+    paid_price  numeric(6, 2)                           not null,
     created     timestamp with time zone                not null,
     updated     timestamp with time zone                not null
 );

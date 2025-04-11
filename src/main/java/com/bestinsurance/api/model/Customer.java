@@ -1,6 +1,7 @@
 package com.bestinsurance.api.model;
 
 import java.time.OffsetDateTime;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -13,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
@@ -62,4 +64,7 @@ public class Customer {
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "ADDRESS")
     private Address address;
+
+    @OneToMany(mappedBy = "customer")
+    private Set<Subscription> customerSubscriptions;
 }
