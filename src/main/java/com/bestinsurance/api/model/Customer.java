@@ -52,6 +52,9 @@ public class Customer {
     @Column(nullable = false)
     private String email;
 
+    @Column(name = "TELEPHONE_NUMBER", length = 20)
+    private String telephoneNumber;
+
     @CreatedDate
     @Column(name = "CREATED", nullable = false, updatable = false)
     private OffsetDateTime createdAt;

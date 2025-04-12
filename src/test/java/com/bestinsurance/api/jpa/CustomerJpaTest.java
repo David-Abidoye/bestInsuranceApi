@@ -11,7 +11,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import com.bestinsurance.api.common.AbstractIntegrationTest;
-import com.bestinsurance.api.config.EnableJpaAuditing;
+import com.bestinsurance.api.config.DomainConfig;
 import com.bestinsurance.api.model.Address;
 import com.bestinsurance.api.model.City;
 import com.bestinsurance.api.model.Country;
@@ -25,7 +25,7 @@ import com.bestinsurance.api.repos.StateRepository;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import(EnableJpaAuditing.class)
+@Import(DomainConfig.class)
 class CustomerJpaTest extends AbstractIntegrationTest {
 
     @Autowired

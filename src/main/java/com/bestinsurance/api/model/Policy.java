@@ -7,7 +7,6 @@ import java.util.UUID;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -62,7 +61,7 @@ public class Policy {
     @Column(name = "UPDATED", nullable = false)
     private OffsetDateTime updatedAt;
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "POLICY_COVERAGES",
             joinColumns = @JoinColumn(name = "POLICY_ID"),
             inverseJoinColumns = @JoinColumn(name = "COVERAGE_ID"))
