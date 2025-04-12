@@ -1,5 +1,9 @@
 package com.bestinsurance.api.jpa;
 
+import static com.bestinsurance.api.common.PersistenceEntitiesUtil.instanceCity;
+import static com.bestinsurance.api.common.PersistenceEntitiesUtil.instanceCountry;
+import static com.bestinsurance.api.common.PersistenceEntitiesUtil.instanceCustomer;
+import static com.bestinsurance.api.common.PersistenceEntitiesUtil.instanceState;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -10,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import com.bestinsurance.api.common.AbstractIntegrationTest;
 import com.bestinsurance.api.config.DomainConfig;
 import com.bestinsurance.api.model.Address;
 import com.bestinsurance.api.model.City;
@@ -26,7 +29,7 @@ import com.bestinsurance.api.repos.StateRepository;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import(DomainConfig.class)
-class CustomerJpaTest extends AbstractIntegrationTest {
+class CustomerJpaTest {
 
     @Autowired
     private CustomerRepository testee;
@@ -41,12 +44,16 @@ class CustomerJpaTest extends AbstractIntegrationTest {
 
     @Test
     void shouldHaveIdAndDate_whenCreated() {
-        Country createdCountry = countryRepo.save(buildCountry());
-        State createdState = stateRepo.save(buildState(createdCountry));
-        City createdCity = cityRepo.save(buildCity(createdState, createdCountry));
+        Country country = instanceCountry("aCountry", 1000000);
+        State state = instanceState("aState", 100000, country);
+        City city = instanceCity("aCity", 10000, state, country);
+
+        Country createdCountry = countryRepo.save(country);
+        State createdState = stateRepo.save(state);
+        City createdCity = cityRepo.save(city);
         Address address = buildAddress(createdCity, createdState, createdCountry);
 
-        Customer aCustomer = buildCustomer(address);
+        Customer aCustomer = instanceCustomer("customerName", "customerSurname", "name.surname@customer.com", address);
 
         Customer createdCustomer = testee.save(aCustomer);
 
@@ -62,15 +69,6 @@ class CustomerJpaTest extends AbstractIntegrationTest {
         );
     }
 
-    private Customer buildCustomer(Address address) {
-        return Customer.builder()
-                .name("CustomerName")
-                .surname("CustomerSurname")
-                .email("customer@bestinsurance.com")
-                .address(address)
-                .build();
-    }
-
     private Address buildAddress(City city, State state, Country country) {
         return Address.builder()
                 .addressLine("anAddressLine")
@@ -78,30 +76,6 @@ class CustomerJpaTest extends AbstractIntegrationTest {
                 .city(city)
                 .state(state)
                 .country(country)
-                .build();
-    }
-
-    private City buildCity(State state, Country country) {
-        return City.builder()
-                .name("aCity")
-                .population(10000)
-                .state(state)
-                .country(country)
-                .build();
-    }
-
-    private State buildState(Country country) {
-        return State.builder()
-                .name("aState")
-                .population(100000)
-                .country(country)
-                .build();
-    }
-
-    private Country buildCountry() {
-        return Country.builder()
-                .name("aCountry")
-                .population(1000000)
                 .build();
     }
 }
