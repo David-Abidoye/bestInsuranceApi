@@ -1,5 +1,6 @@
 package com.bestinsurance.api.dto;
 
+import com.bestinsurance.api.validation.annotation.NotEmptyBody;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@NotEmptyBody
 public class CustomerUpdateRequest {
 
     @Email(message = "Invalid email format")

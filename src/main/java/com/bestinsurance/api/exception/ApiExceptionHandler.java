@@ -18,17 +18,16 @@ import jakarta.validation.ConstraintViolationException;
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
-    //@ExceptionHandler(Exception.class)
-    //@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    //public ApiErrorResponse rootErrorHandler(Exception ex, HttpServletRequest request) {
-    //    return ApiErrorResponse.builder()
-    //            .message("An unexpected error occurred: " + ex.getMessage())
-    //            .cause(ex.getCause() != null ? ex.getCause().getClass().toString() : null)
-    //            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-    //            .timestamp(LocalDateTime.now())
-    //            .path(request.getRequestURI())
-    //            .build();
-    //}
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiErrorResponse rootErrorHandler(Exception ex, HttpServletRequest request) {
+        return ApiErrorResponse.builder()
+                .message("An unexpected error occurred: " + ex.getMessage())
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .timestamp(LocalDateTime.now())
+                .path(request.getRequestURI())
+                .build();
+    }
 
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -45,7 +44,7 @@ public class ApiExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiErrorResponse validationHandler(MethodArgumentNotValidException ex, HttpServletRequest request) {
         return ApiErrorResponse.builder()
-                .message("Validation failed")
+                .message("Validation failed: " + ex.getMessage())
                 .status(HttpStatus.BAD_REQUEST.value())
                 .timestamp(LocalDateTime.now())
                 .path(request.getRequestURI())

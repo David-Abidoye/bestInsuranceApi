@@ -18,7 +18,6 @@ public class ApiErrorResponse {
 
     private String message;
     private int status;
-    private String cause;
     private LocalDateTime timestamp;
     private String path;
     @Builder.Default
