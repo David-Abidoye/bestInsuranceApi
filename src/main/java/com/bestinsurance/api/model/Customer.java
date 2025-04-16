@@ -49,7 +49,7 @@ public class Customer {
     private String surname;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(name = "TELEPHONE_NUMBER", length = 20)
@@ -64,7 +64,7 @@ public class Customer {
     private OffsetDateTime updatedAt;
 
     @NotNull
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "ADDRESS")
     private Address address;
 

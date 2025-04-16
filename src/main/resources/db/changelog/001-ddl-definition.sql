@@ -2,7 +2,7 @@
 --changeset david:001-ddl-definition splitStatements:false
 
 create
-extension if not exists "uuid-ossp";
+    extension if not exists "uuid-ossp";
 
 create table countries
 (
@@ -41,11 +41,11 @@ create table addresses
 create table customers
 (
     customer_id uuid primary key                  default uuid_generate_v4(),
-    name     varchar(64)              not null,
-    surname  varchar(64)              not null,
-    email    varchar(320)             not null,
-    created  timestamp with time zone not null default now(),
-    address  uuid references addresses (address_id)
+    name        varchar(64)              not null,
+    surname     varchar(64)              not null,
+    email       varchar(320) unique      not null,
+    created     timestamp with time zone not null default now(),
+    address     uuid references addresses (address_id)
 );
 
 create table policies
