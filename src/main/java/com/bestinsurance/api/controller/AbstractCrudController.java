@@ -2,11 +2,15 @@ package com.bestinsurance.api.controller;
 
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import com.bestinsurance.api.mapper.DTOMapper;
 import com.bestinsurance.api.service.CrudService;
-import jakarta.persistence.EntityNotFoundException;
 
 public abstract class AbstractCrudController<C, U, S, T, I> implements CrudController<C, U, S> {
+
+    protected static final String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
+    protected static final String MEDIA_TYPE_JSON = "application/json";
 
     protected abstract CrudService<T, I> getService();
     protected abstract DTOMapper<C, T> getCreateDtoMapper();
@@ -15,20 +19,14 @@ public abstract class AbstractCrudController<C, U, S, T, I> implements CrudContr
     protected abstract DTOMapper<Map<String, String>, I> getIdMapper();
 
     @Override
+    @PostMapping(consumes = MEDIA_TYPE_JSON, produces = MEDIA_TYPE_JSON)
     public S create(C createDTO) {
         T domainObj = getService().create(getCreateDtoMapper().map(createDTO));
         return getSearchDtoMapper().map(domainObj);
     }
 
     @Override
-    public S searchById(Map<String, String> idDTO) {
-        I id = getIdMapper().map(idDTO);
-        T domainObj = getService().getById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Entity with id: " + id.toString() + " does not exist!"));
-        return getSearchDtoMapper().map(domainObj);
-    }
-
-    @Override
+    @GetMapping(produces = MEDIA_TYPE_JSON)
     public List<S> all() {
         List<T> allDomainObjects = getService().findAll();
         return allDomainObjects.stream()

@@ -25,11 +25,6 @@ public abstract class AbstractCrudService<T extends DomainObject<I>, I> implemen
         return getRepository().getReferenceById(id);
     }
 
-    public T update(I id, T t) {
-        t.setId(id);
-        return getRepository().save(t);
-    }
-
     public void delete(I id) {
         getRepository().deleteById(id);
     }

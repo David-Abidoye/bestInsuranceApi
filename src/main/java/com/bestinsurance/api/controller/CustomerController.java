@@ -2,7 +2,6 @@ package com.bestinsurance.api.controller;
 
 import java.util.Map;
 import java.util.UUID;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +21,6 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.EntityNotFoundException;
 
-@Validated
 @RestController
 @RequestMapping("/customers")
 public class CustomerController extends AbstractSimpleIdCrudController<CustomerCreateRequest, CustomerUpdateRequest, CustomerResponse, Customer> {
@@ -32,7 +30,10 @@ public class CustomerController extends AbstractSimpleIdCrudController<CustomerC
     private final CustomerResponseMapper customerResponseMapper;
     private final CustomerUpdateMapper customerUpdateMapper;
 
-    public CustomerController(CustomerService customerService, CustomerCreateMapper customerCreateMapper, CustomerResponseMapper customerResponseMapper, CustomerUpdateMapper customerUpdateMapper) {
+    public CustomerController(CustomerService customerService,
+                              CustomerCreateMapper customerCreateMapper,
+                              CustomerResponseMapper customerResponseMapper,
+                              CustomerUpdateMapper customerUpdateMapper) {
         this.customerService = customerService;
         this.customerCreateMapper = customerCreateMapper;
         this.customerResponseMapper = customerResponseMapper;
@@ -60,7 +61,7 @@ public class CustomerController extends AbstractSimpleIdCrudController<CustomerC
     }
 
     @Override
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = MEDIA_TYPE_JSON)
     @Parameter(in = ParameterIn.PATH, name = "id", schema = @Schema(type = "string"), required = true)
     public CustomerResponse searchById(@PathVariable Map<String, String> idDTO) {
         UUID id = getIdMapper().map(idDTO);

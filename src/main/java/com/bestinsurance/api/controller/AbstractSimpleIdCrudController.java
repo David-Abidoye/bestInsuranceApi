@@ -13,10 +13,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public abstract class AbstractSimpleIdCrudController<C, U, S, T> extends AbstractCrudController<C, U, S, T, UUID> {
 
-    private static final String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
-
     @Override
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MEDIA_TYPE_JSON, produces = MEDIA_TYPE_JSON)
     @Parameter(in = ParameterIn.PATH, name = "id", schema = @Schema(type = "string"), required = true)
     public S update(@PathVariable Map<String, String> idDTO, U updateDTO) {
         return super.update(idDTO, updateDTO);
