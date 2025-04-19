@@ -34,7 +34,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "POLICIES")
 @EntityListeners(AuditingEntityListener.class)
-public class Policy {
+public class Policy implements DomainObject<UUID> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -1,7 +1,10 @@
 package com.bestinsurance.api.controller;
 
-import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.bestinsurance.api.dto.CustomerCreateRequest;
@@ -10,14 +13,19 @@ import com.bestinsurance.api.dto.CustomerUpdateRequest;
 import com.bestinsurance.api.mapper.CustomerCreateMapper;
 import com.bestinsurance.api.mapper.CustomerResponseMapper;
 import com.bestinsurance.api.mapper.CustomerUpdateMapper;
+import com.bestinsurance.api.mapper.DTOMapper;
 import com.bestinsurance.api.model.Customer;
+import com.bestinsurance.api.service.CrudService;
 import com.bestinsurance.api.service.CustomerService;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.EntityNotFoundException;
 
 @Validated
 @RestController
 @RequestMapping("/customers")
-public class CustomerController implements CrudController<CustomerCreateRequest, CustomerUpdateRequest, CustomerResponse> {
+public class CustomerController extends AbstractSimpleIdCrudController<CustomerCreateRequest, CustomerUpdateRequest, CustomerResponse, Customer> {
 
     private final CustomerService customerService;
     private final CustomerCreateMapper customerCreateMapper;
@@ -32,34 +40,32 @@ public class CustomerController implements CrudController<CustomerCreateRequest,
     }
 
     @Override
-    public CustomerResponse create(CustomerCreateRequest customerCreateRequest) {
-        Customer createdCustomer = customerService.create(customerCreateMapper.map(customerCreateRequest));
-        return customerResponseMapper.map(createdCustomer);
+    protected CrudService<Customer, UUID> getService() {
+        return customerService;
     }
 
     @Override
-    public CustomerResponse searchById(String id) {
-        Customer foundCustomer = customerService.getById(id)
+    protected DTOMapper<CustomerCreateRequest, Customer> getCreateDtoMapper() {
+        return customerCreateMapper;
+    }
+
+    @Override
+    protected DTOMapper<CustomerUpdateRequest, Customer> getUpdateDtoMapper() {
+        return customerUpdateMapper;
+    }
+
+    @Override
+    protected DTOMapper<Customer, CustomerResponse> getSearchDtoMapper() {
+        return customerResponseMapper;
+    }
+
+    @Override
+    @GetMapping("/{id}")
+    @Parameter(in = ParameterIn.PATH, name = "id", schema = @Schema(type = "string"), required = true)
+    public CustomerResponse searchById(@PathVariable Map<String, String> idDTO) {
+        UUID id = getIdMapper().map(idDTO);
+        Customer foundCustomer = getService().getById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Customer with id: " + id + " does not exist!"));
         return customerResponseMapper.map(foundCustomer);
-    }
-
-    @Override
-    public List<CustomerResponse> all() {
-        List<Customer> allCustomers = customerService.findAll();
-        return allCustomers.stream()
-                .map(customerResponseMapper::map)
-                .toList();
-    }
-
-    @Override
-    public CustomerResponse update(String id, CustomerUpdateRequest customerUpdateRequest) {
-        Customer updatedCustomer = customerService.update(id, customerUpdateMapper.map(customerUpdateRequest));
-        return customerResponseMapper.map(updatedCustomer);
-    }
-
-    @Override
-    public void delete(String id) {
-        customerService.delete(id);
     }
 }

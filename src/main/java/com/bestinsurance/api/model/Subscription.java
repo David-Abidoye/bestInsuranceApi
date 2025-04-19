@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "SUBSCRIPTIONS")
 @EntityListeners(AuditingEntityListener.class)
-public class Subscription {
+public class Subscription implements DomainObject<SubscriptionId> {
 
     @EmbeddedId
     @EqualsAndHashCode.Include

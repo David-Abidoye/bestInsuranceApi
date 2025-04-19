@@ -32,7 +32,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "CUSTOMERS")
 @EntityListeners(AuditingEntityListener.class)
-public class Customer {
+public class Customer implements DomainObject<UUID> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

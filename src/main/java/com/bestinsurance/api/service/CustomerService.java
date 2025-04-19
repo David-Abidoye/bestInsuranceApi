@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class CustomerService implements CrudService<Customer> {
+public class CustomerService extends AbstractCrudService<Customer, UUID> {
 
     private final CustomerRepository customerRepository;
     private final CityRepository cityRepository;
@@ -34,6 +34,11 @@ public class CustomerService implements CrudService<Customer> {
         this.cityRepository = cityRepository;
         this.stateRepository = stateRepository;
         this.countryRepository = countryRepository;
+    }
+
+    @Override
+    protected CustomerRepository getRepository() {
+        return customerRepository;
     }
 
     @Override
@@ -52,24 +57,19 @@ public class CustomerService implements CrudService<Customer> {
     @Override
     public List<Customer> findAll() {
         log.debug("Fetching list of all customers");
-        return customerRepository.findAll();
+        return super.findAll();
     }
 
     @Override
-    public Optional<Customer> getById(String id) {
+    public Optional<Customer> getById(UUID id) {
         log.debug("Fetching customer with id: {}", id);
-        return customerRepository.findById(UUID.fromString(id));
+        return super.getById(id);
     }
 
     @Override
-    public Customer getReferenceById(String id) {
-        return customerRepository.getReferenceById(UUID.fromString(id));
-    }
-
-    @Override
-    public Customer update(String id, Customer customer) {
+    public Customer update(UUID id, Customer customer) {
         log.debug("Updating customer with id: {}", id);
-        return customerRepository.findById(UUID.fromString(id))
+        return customerRepository.findById(id)
                 .map(customerToUpdate -> {
                     updateCustomerFields(customerToUpdate, customer);
                     return customerRepository.save(customerToUpdate);
@@ -78,9 +78,9 @@ public class CustomerService implements CrudService<Customer> {
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(UUID id) {
         log.debug("Deleting customer with id: {}", id);
-        customerRepository.deleteById(UUID.fromString(id));
+        super.delete(id);
     }
 
     private void updateCustomerFields(Customer customerToUpdate, Customer customer) {

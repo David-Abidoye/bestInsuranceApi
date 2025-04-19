@@ -30,7 +30,7 @@ class CustomerServiceTest extends AbstractCustomerInitializedTest {
         String oldEmail = customer.getEmail();
         Customer customerUpdatedFields = new Customer();
         customerUpdatedFields.setEmail("newEmail@email.com");
-        Customer updated = customerService.update(customer.getId().toString(), customerUpdatedFields);
+        Customer updated = customerService.update(customer.getId(), customerUpdatedFields);
         assertThat(updated.getName(), is(customer.getName()));
         assertThat(updated.getSurname(), is(customer.getSurname()));
         assertThat(updated.getEmail(), is(not(oldEmail)));
