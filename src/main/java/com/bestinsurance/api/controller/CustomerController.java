@@ -67,6 +67,6 @@ public class CustomerController extends AbstractSimpleIdCrudController<CustomerC
         UUID id = getIdMapper().map(idDTO);
         Customer foundCustomer = getService().getById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Customer with id: " + id + " does not exist!"));
-        return customerResponseMapper.map(foundCustomer);
+        return getSearchDtoMapper().map(foundCustomer);
     }
 }

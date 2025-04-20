@@ -88,9 +88,9 @@ public class SubscriptionController extends AbstractCrudController<SubscriptionC
     @Parameter(in = ParameterIn.PATH, name = "idPolicy", schema = @Schema(type = "string"), required = true)
     public SubscriptionResponse searchById(@PathVariable Map<String, String> idDTO) {
         SubscriptionId id = getIdMapper().map(idDTO);
-        Subscription foundSubscription = subscriptionService.getById(id)
+        Subscription foundSubscription = getService().getById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Subscription with id: " + id.toString() + " does not exist!"));
-        return subscriptionResponseMapper.map(foundSubscription);
+        return getSearchDtoMapper().map(foundSubscription);
     }
 
     @Override

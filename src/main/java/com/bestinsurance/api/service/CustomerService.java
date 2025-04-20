@@ -44,13 +44,13 @@ public class CustomerService extends AbstractCrudService<Customer, UUID> {
     @Override
     public Customer create(Customer customer) {
         String email = customer.getEmail();
-        if (customerRepository.existsByEmail(email)) {
+        if (getRepository().existsByEmail(email)) {
             log.debug("Customer with email {} already exists", email);
             throw new EntityExistsException("Customer with email " + email + " already exists");
         } else {
             log.debug("Saving a new customer");
             enrichAddress(customer.getAddress());
-            return customerRepository.findById(customerRepository.save(customer).getId()).orElseThrow();
+            return getRepository().save(customer);
         }
     }
 
@@ -69,10 +69,10 @@ public class CustomerService extends AbstractCrudService<Customer, UUID> {
     @Override
     public Customer update(UUID id, Customer customer) {
         log.debug("Updating customer with id: {}", id);
-        return customerRepository.findById(id)
+        return getRepository().findById(id)
                 .map(customerToUpdate -> {
                     updateCustomerFields(customerToUpdate, customer);
-                    return customerRepository.save(customerToUpdate);
+                    return getRepository().save(customerToUpdate);
                 })
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Customer with id: %s does not exist!", id)));
     }
@@ -85,7 +85,7 @@ public class CustomerService extends AbstractCrudService<Customer, UUID> {
 
     private void updateCustomerFields(Customer customerToUpdate, Customer customer) {
         Optional.ofNullable(customer.getEmail()).ifPresent(email -> {
-            if (customerRepository.existsByEmail(email)) {
+            if (getRepository().existsByEmail(email)) {
                 log.debug("Email {} already exists", email);
                 throw new EntityExistsException("Cannot update! Email: " + email + " already exists");
             } else {
