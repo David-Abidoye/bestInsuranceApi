@@ -1,5 +1,7 @@
 package com.bestinsurance.api.dto;
 
+import static com.bestinsurance.api.helper.ConstraintHelper.UUID_PATTERN;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
@@ -36,14 +38,14 @@ public class CustomerCreateRequest {
     private String postalCode;
 
     @NotBlank(message = "Country id cannot be blank")
-    @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", message = "Invalid UUID format")
+    @Pattern(regexp = UUID_PATTERN, message = "Invalid UUID format")
     private String idCountry;
 
     @NotBlank(message = "City id cannot be blank")
-    @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", message = "Invalid UUID format")
+    @Pattern(regexp = UUID_PATTERN, message = "Invalid UUID format")
     private String idCity;
 
     @NotBlank(message = "State id cannot be blank")
-    @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", message = "Invalid UUID format")
+    @Pattern(regexp = UUID_PATTERN, message = "Invalid UUID format")
     private String idState;
 }

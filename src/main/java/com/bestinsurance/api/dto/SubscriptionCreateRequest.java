@@ -1,5 +1,8 @@
 package com.bestinsurance.api.dto;
 
+import static com.bestinsurance.api.helper.ConstraintHelper.DATE_PATTERN;
+import static com.bestinsurance.api.helper.ConstraintHelper.UUID_PATTERN;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -15,16 +18,16 @@ import lombok.NoArgsConstructor;
 public class SubscriptionCreateRequest {
 
     @NotBlank(message = "Customer id cannot be blank")
-    @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", message = "Invalid UUID format")
+    @Pattern(regexp = UUID_PATTERN, message = "Invalid UUID format")
     private String customerId;
     @NotBlank(message = "Policy id cannot be blank")
-    @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", message = "Invalid UUID format")
+    @Pattern(regexp = UUID_PATTERN, message = "Invalid UUID format")
     private String policyId;
     @NotNull
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = DATE_PATTERN)
     private LocalDate startDate;
     @NotNull
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = DATE_PATTERN)
     private LocalDate endDate;
     @NotNull
     @Digits(integer = 6, fraction = 2)

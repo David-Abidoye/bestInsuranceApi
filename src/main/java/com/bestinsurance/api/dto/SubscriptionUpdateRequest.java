@@ -1,5 +1,7 @@
 package com.bestinsurance.api.dto;
 
+import static com.bestinsurance.api.helper.ConstraintHelper.DATE_PATTERN;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import com.bestinsurance.api.validation.annotation.NotEmptyBody;
@@ -13,9 +15,9 @@ import lombok.NoArgsConstructor;
 @NotEmptyBody
 public class SubscriptionUpdateRequest {
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = DATE_PATTERN)
     private LocalDate startDate;
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = DATE_PATTERN)
     private LocalDate endDate;
     @Digits(integer = 6, fraction = 2)
     private BigDecimal paidPrice;

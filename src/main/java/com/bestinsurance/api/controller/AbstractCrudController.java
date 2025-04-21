@@ -9,7 +9,6 @@ import com.bestinsurance.api.service.CrudService;
 
 public abstract class AbstractCrudController<C, U, S, T, I> implements CrudController<C, U, S> {
 
-    protected static final String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
     protected static final String MEDIA_TYPE_JSON = "application/json";
 
     protected abstract CrudService<T, I> getService();

@@ -1,5 +1,7 @@
 package com.bestinsurance.api.dto;
 
+import static com.bestinsurance.api.helper.ConstraintHelper.UUID_PATTERN;
+
 import com.bestinsurance.api.validation.annotation.NotEmptyBody;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Digits;
@@ -25,12 +27,12 @@ public class CustomerUpdateRequest {
     @Size(min = 6, max = 6, message = "Postal code should have 6 digits")
     private String postalCode;
 
-    @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", message = "Invalid UUID format")
+    @Pattern(regexp = UUID_PATTERN, message = "Invalid UUID format")
     private String idCountry;
 
-    @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", message = "Invalid UUID format")
+    @Pattern(regexp = UUID_PATTERN, message = "Invalid UUID format")
     private String idCity;
 
-    @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", message = "Invalid UUID format")
+    @Pattern(regexp = UUID_PATTERN, message = "Invalid UUID format")
     private String idState;
 }
