@@ -2,8 +2,10 @@ package com.bestinsurance.api.controller;
 
 import java.util.List;
 import java.util.Map;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import com.bestinsurance.api.mapper.DTOMapper;
 import com.bestinsurance.api.service.CrudService;
 
@@ -19,6 +21,7 @@ public abstract class AbstractCrudController<C, U, S, T, I> implements CrudContr
 
     @Override
     @PostMapping(consumes = MEDIA_TYPE_JSON, produces = MEDIA_TYPE_JSON)
+    @ResponseStatus(HttpStatus.CREATED)
     public S create(C createDTO) {
         T domainObj = getService().create(getCreateDtoMapper().map(createDTO));
         return getSearchDtoMapper().map(domainObj);
