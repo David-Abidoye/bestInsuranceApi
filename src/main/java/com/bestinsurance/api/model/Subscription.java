@@ -11,6 +11,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
@@ -30,18 +31,18 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "SUBSCRIPTIONS")
 @EntityListeners(AuditingEntityListener.class)
-public class Subscription {
+public class Subscription implements DomainObject<SubscriptionId> {
 
     @EmbeddedId
     @EqualsAndHashCode.Include
     private SubscriptionId id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("policyId")
     @JoinColumn(name = "POLICY_ID", nullable = false)
     private Policy policy;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("customerId")
     @JoinColumn(name = "CUSTOMER_ID", nullable = false)
     private Customer customer;
@@ -55,7 +56,7 @@ public class Subscription {
     private LocalDate endDate;
 
     @NotNull
-    @Column(name = "PAID_PRICE", precision = 4, scale = 2, nullable = false)
+    @Column(name = "PAID_PRICE", precision = 6, scale = 2, nullable = false)
     private BigDecimal paidPrice;
 
     @CreatedDate

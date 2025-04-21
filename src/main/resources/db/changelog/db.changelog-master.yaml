@@ -3,3 +3,32 @@ databaseChangeLog:
       file: db/changelog/001-ddl-definition.sql
   - include:
       file: db/changelog/002-alter-customer-table.sql
+  - changeSet:
+      id: load-countries-data
+      labels: countries-states-cities-data
+      author: david
+      changes:
+        - loadData:
+            tableName: countries
+            usePreparedStatements: false
+            separator: ','
+            relativeToChangelogFile: true
+            file: countries_data.csv
+            encoding: UTF-8
+            quotchar: '"'
+        - loadData:
+            tableName: states
+            usePreparedStatements: false
+            separator: ','
+            relativeToChangelogFile: true
+            file: states_data.csv
+            encoding: UTF-8
+            quotchar: '"'
+        - loadData:
+            tableName: cities
+            usePreparedStatements: false
+            separator: ','
+            relativeToChangelogFile: true
+            file: cities_data.csv
+            encoding: UTF-8
+            quotchar: '"'

@@ -1,11 +1,13 @@
 package com.bestinsurance.api.model;
 
+import java.util.Set;
 import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -21,7 +23,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "COUNTRIES")
-public class Country {
+public class Country implements DomainObject<UUID> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -34,4 +36,13 @@ public class Country {
     private String name;
 
     private int population;
+
+    @OneToMany(mappedBy = "country")
+    private Set<State> countryStates;
+
+    @OneToMany(mappedBy = "country")
+    private Set<City> countryCities;
+
+    @OneToMany(mappedBy = "country")
+    private Set<Address> countryAddresses;
 }

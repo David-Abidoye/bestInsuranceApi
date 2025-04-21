@@ -1,5 +1,6 @@
 package com.bestinsurance.api.model;
 
+import java.util.Set;
 import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -23,7 +25,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "STATES")
-public class State {
+public class State implements DomainObject<UUID> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -41,4 +43,10 @@ public class State {
     @ManyToOne
     @JoinColumn(name = "COUNTRY_ID", nullable = false)
     private Country country;
+
+    @OneToMany(mappedBy = "state")
+    private Set<City> stateCities;
+
+    @OneToMany(mappedBy = "state")
+    private Set<Address> stateAddresses;
 }

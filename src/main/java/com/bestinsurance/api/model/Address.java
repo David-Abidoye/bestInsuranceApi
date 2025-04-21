@@ -3,6 +3,7 @@ package com.bestinsurance.api.model;
 import java.util.UUID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,7 +24,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "ADDRESSES")
-public class Address {
+public class Address implements DomainObject<UUID> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -32,24 +33,24 @@ public class Address {
     private UUID id;
 
     @NotNull
-    @Column(name = "ADDRESS", nullable = false)
+    @Column(name = "ADDRESS", nullable = false, length = 128)
     private String addressLine;
 
-    @Column(name = "POSTAL_CODE")
+    @Column(name = "POSTAL_CODE", length = 16)
     private String postalCode;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "CITY_ID", nullable = false)
     private City city;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "STATE_ID", nullable = false)
     private State state;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "COUNTRY_ID", nullable = false)
     private Country country;
 }

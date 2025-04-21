@@ -1,6 +1,7 @@
 package com.bestinsurance.api.model;
 
 import java.time.OffsetDateTime;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -13,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
@@ -30,7 +32,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "CUSTOMERS")
 @EntityListeners(AuditingEntityListener.class)
-public class Customer {
+public class Customer implements DomainObject<UUID> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -47,8 +49,11 @@ public class Customer {
     private String surname;
 
     @NotNull
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(name = "TELEPHONE_NUMBER", length = 20)
+    private String telephoneNumber;
 
     @CreatedDate
     @Column(name = "CREATED", nullable = false, updatable = false)
@@ -59,7 +64,10 @@ public class Customer {
     private OffsetDateTime updatedAt;
 
     @NotNull
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "ADDRESS")
     private Address address;
+
+    @OneToMany(mappedBy = "customer")
+    private Set<Subscription> customerSubscriptions;
 }
