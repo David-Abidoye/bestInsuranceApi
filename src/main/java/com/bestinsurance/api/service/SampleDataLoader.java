@@ -60,12 +60,18 @@ public class SampleDataLoader {
                 "74716a04-d538-4441-84bf-7c41470778ca",
                 "eb5e9505-8580-4857-9195-6bee0324ac0f"};
 
+        LocalDate[] birthDates = {LocalDate.now().minusYears(20),
+                LocalDate.now().minusYears(40),
+                LocalDate.now().minusYears(50),
+                LocalDate.now().minusYears(60),
+                LocalDate.now().minusYears(70)};
 
         List<Customer> customers = new ArrayList<>();
         for(int i = 0; i < 10; i++) {
             Customer customer = new Customer();
             customer.setName(names[i]);
             customer.setSurname(surnames[i]);
+            customer.setBirthDate(birthDates[i/2]);
             customer.setEmail(customer.getName().toLowerCase() + "." + customer.getSurname().toLowerCase() + "@example.com");
             customer.setTelephoneNumber(String.format("(%d)%d-%04d", random.nextInt(900) + 100, random.nextInt(900) + 100, random.nextInt(10000)));
             City city = findCity(cityIds[i/2]);

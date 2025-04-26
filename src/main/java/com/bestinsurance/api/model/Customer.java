@@ -1,5 +1,6 @@
 package com.bestinsurance.api.model;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -47,6 +48,10 @@ public class Customer implements DomainObject<UUID> {
     @NotNull
     @Column(nullable = false)
     private String surname;
+
+    @NotNull
+    @Column(name = "BIRTH_DATE", nullable = false)
+    private LocalDate birthDate;
 
     @NotNull
     @Column(nullable = false, unique = true)

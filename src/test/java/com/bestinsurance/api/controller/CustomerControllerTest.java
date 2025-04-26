@@ -11,7 +11,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
+import java.time.Month;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,22 +28,30 @@ import com.bestinsurance.api.dto.AddressView;
 import com.bestinsurance.api.dto.CustomerCreateRequest;
 import com.bestinsurance.api.dto.CustomerUpdateRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.jayway.jsonpath.JsonPath;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
 @AutoConfigureMockMvc
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CustomerControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
     private final ObjectMapper om = new ObjectMapper();
 
+    @BeforeAll
+    void init() {
+        om.registerModule(new JavaTimeModule());
+    }
+
     @Test
     void shouldCreateCustomer_whenValidRequest() throws Exception {
         CustomerCreateRequest customerCreateRequest = CustomerCreateRequest.builder()
                 .name("testName")
                 .surname("testSurname")
+                .birthDate(LocalDate.of(1990, Month.JANUARY, 1))
                 .email("testEmail@email.com")
                 .street("123 Test Street, APT 4")
                 .postalCode("123456")
@@ -105,6 +117,7 @@ class CustomerControllerTest {
                 .andExpect(jsonPath("$.id", is(id)))
                 .andExpect(jsonPath("$.name", is("testName")))
                 .andExpect(jsonPath("$.surname", is("testSurname")))
+                .andExpect(jsonPath("$.birthDate", is("1990-01-01")))
                 .andExpect(jsonPath("$.email", is("updatedEmail@email.com")))
                 .andExpectAll(getAddressExpectations())
                 .andExpect(jsonPath("$.address.address", is("456 Updated Street")))
@@ -137,6 +150,7 @@ class CustomerControllerTest {
         CustomerCreateRequest customerCreateRequest = CustomerCreateRequest.builder()
                 .name("testName")
                 .surname("testSurname")
+                .birthDate(LocalDate.of(1990, Month.JANUARY, 1))
                 .email("testEmail@email.com")
                 .street("123 Test Street, APT 4")
                 .postalCode("123456")
@@ -158,6 +172,7 @@ class CustomerControllerTest {
         CustomerCreateRequest customerCreateRequest = CustomerCreateRequest.builder()
                 .name("testName")
                 .surname("testSurname")
+                .birthDate(LocalDate.of(1990, Month.JANUARY, 1))
                 .email("testEmail@email.com")
                 .street("123 Test Street, APT 4")
                 .postalCode("123456")

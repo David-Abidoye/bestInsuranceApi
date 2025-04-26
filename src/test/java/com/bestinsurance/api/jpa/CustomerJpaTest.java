@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -53,7 +54,7 @@ class CustomerJpaTest {
         City createdCity = cityRepo.save(city);
         Address address = buildAddress(createdCity, createdState, createdCountry);
 
-        Customer aCustomer = instanceCustomer("customerName", "customerSurname", "name.surname@customer.com", address);
+        Customer aCustomer = instanceCustomer("customerName", "customerSurname", LocalDate.now().minusYears(20), "name.surname@customer.com", address);
 
         Customer createdCustomer = testee.save(aCustomer);
 
