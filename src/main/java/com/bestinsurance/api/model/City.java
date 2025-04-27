@@ -38,7 +38,7 @@ public class City implements DomainObject<UUID> {
     @Column(nullable = false)
     private String name;
 
-    private int population;
+    private Integer population;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "STATE_ID")

@@ -37,7 +37,7 @@ public class State implements DomainObject<UUID> {
     @Column(nullable = false)
     private String name;
 
-    private int population;
+    private Integer population;
 
     @NotNull
     @ManyToOne

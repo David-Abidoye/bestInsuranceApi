@@ -35,7 +35,7 @@ public class Country implements DomainObject<UUID> {
     @Column(nullable = false)
     private String name;
 
-    private int population;
+    private Integer population;
 
     @OneToMany(mappedBy = "country")
     private Set<State> countryStates;
