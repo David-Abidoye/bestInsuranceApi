@@ -30,6 +30,6 @@ public class SubscriptionCreateRequest {
     @JsonFormat(pattern = DATE_PATTERN)
     private LocalDate endDate;
     @NotNull
-    @Digits(integer = 6, fraction = 2)
+    @Digits(integer = 4, fraction = 2)
     private BigDecimal paidPrice;
 }

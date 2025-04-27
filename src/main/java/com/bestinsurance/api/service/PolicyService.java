@@ -1,15 +1,19 @@
 package com.bestinsurance.api.service;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.bestinsurance.api.model.Coverage;
 import com.bestinsurance.api.model.Policy;
 import com.bestinsurance.api.repos.CoverageRepository;
 import com.bestinsurance.api.repos.PolicyRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.Getter;
 
 @Service
 public class PolicyService extends AbstractCrudService<Policy, UUID> {
@@ -55,5 +59,56 @@ public class PolicyService extends AbstractCrudService<Policy, UUID> {
                         })
                 .collect(Collectors.toSet());
         policy.setCoverages(enrichedCoverage);
+    }
+
+    public List<Policy> findAllWithFilters(BigDecimal minPrice, BigDecimal maxPrice,
+                                           BigDecimal price, String nameContains, PolicyOrderBy orderBy) {
+
+        Sort sortAsc = getSortOrderAsc(orderBy);
+
+        if (minPrice != null && maxPrice != null && nameContains != null) {
+            return getRepository().findAllByNameContainingIgnoreCaseAndPriceBetween(nameContains, minPrice, maxPrice, sortAsc);
+        }
+        if (price != null && nameContains != null) {
+            return getRepository().findAllByNameContainingIgnoreCaseAndPrice(nameContains, price, sortAsc);
+        }
+        if (minPrice != null && nameContains != null) {
+            return getRepository().findAllByNameContainingIgnoreCaseAndPriceGreaterThan(nameContains, minPrice, sortAsc);
+        }
+        if (maxPrice != null && nameContains != null) {
+            return getRepository().findAllByNameContainingIgnoreCaseAndPriceLessThan(nameContains, maxPrice, sortAsc);
+        }
+        if (minPrice != null && maxPrice != null) {
+            return getRepository().findAllByPriceBetween(minPrice, maxPrice, sortAsc);
+        }
+        if (minPrice != null) {
+            return getRepository().findAllByPriceGreaterThan(minPrice, sortAsc);
+        }
+        if (maxPrice != null) {
+            return getRepository().findAllByPriceLessThan(maxPrice, sortAsc);
+        }
+        if (price != null) {
+            return getRepository().findAllByPrice(price, sortAsc);
+        }
+        if (nameContains != null) {
+            return getRepository().findAllByNameContainingIgnoreCase(nameContains, sortAsc);
+        }
+        return getRepository().findAll(sortAsc);
+    }
+
+    private Sort getSortOrderAsc(PolicyOrderBy orderBy) {
+        return orderBy == null ? Sort.by(Sort.Direction.ASC, PolicyOrderBy.NAME.getValue()) : Sort.by(Sort.Direction.ASC, orderBy.getValue());
+    }
+
+    @Getter
+    public enum PolicyOrderBy {
+        NAME("name"),
+        PRICE("price");
+
+        private final String value;
+
+        PolicyOrderBy(String value) {
+            this.value = value;
+        }
     }
 }
