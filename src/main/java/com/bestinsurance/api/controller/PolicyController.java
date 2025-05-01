@@ -1,9 +1,12 @@
 package com.bestinsurance.api.controller;
 
+import static com.bestinsurance.api.validation.utils.ValidationUtils.parsePolicyOrderByFilter;
+import static com.bestinsurance.api.validation.utils.ValidationUtils.parsePriceFilter;
+import static com.bestinsurance.api.validation.utils.ValidationUtils.parseStringFilter;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -83,42 +86,12 @@ public class PolicyController extends AbstractSimpleIdCrudController<PolicyCreat
         BigDecimal priceMoreThan = parsePriceFilter(filters, "priceMoreThan");
         BigDecimal priceLessThan = parsePriceFilter(filters, "priceLessThan");
         BigDecimal price = parsePriceFilter(filters, "price");
-        String nameContains = filters.get("nameContains");
-        PolicyService.PolicyOrderBy orderBy = parseOrderByFilter(filters.get("orderBy"));
+        String nameContains = parseStringFilter(filters, "nameContains");
+        PolicyService.PolicyOrderBy orderBy = parsePolicyOrderByFilter(filters.get("orderBy"));
 
         List<Policy> allDomainObjects = getService().findAllWithFilters(priceMoreThan, priceLessThan, price, nameContains, orderBy);
         return allDomainObjects.stream()
                 .map(getSearchDtoMapper()::map)
                 .toList();
-    }
-
-    private BigDecimal parsePriceFilter(Map<String, String> filters, String key) {
-        return Optional.ofNullable(filters.get(key))
-                .map(this::validateAndReturnPrice)
-                .orElse(null);
-    }
-
-    private PolicyService.PolicyOrderBy parseOrderByFilter(String orderBy) {
-        return Optional.ofNullable(orderBy)
-                .map(o -> {
-                    if (!(o.equals("NAME") || o.equals("PRICE"))) {
-                        throw new IllegalArgumentException("Invalid parameter to order policies by: "+o);
-                    }
-                    return PolicyService.PolicyOrderBy.valueOf(o);
-                })
-                .orElse(null);
-    }
-
-    private BigDecimal validateAndReturnPrice(String price) {
-        try {
-            BigDecimal bigDecimalPrice = new BigDecimal(price);
-            if (bigDecimalPrice.scale() > 2 || bigDecimalPrice.precision() - bigDecimalPrice.scale() > 4) {
-                throw new IllegalArgumentException("Price entry ["+price+"] is out of bounds");
-            }
-            return bigDecimalPrice;
-        } catch (NumberFormatException ex){
-            throw new IllegalArgumentException("Price entry ["+price+"] is invalid");
-        }
-
     }
 }

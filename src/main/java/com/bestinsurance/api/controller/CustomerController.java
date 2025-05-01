@@ -1,7 +1,14 @@
 package com.bestinsurance.api.controller;
 
+import static com.bestinsurance.api.validation.utils.ValidationUtils.parseCustomerOrderByFilter;
+import static com.bestinsurance.api.validation.utils.ValidationUtils.parseIntegerFilter;
+import static com.bestinsurance.api.validation.utils.ValidationUtils.parseOrderDirection;
+import static com.bestinsurance.api.validation.utils.ValidationUtils.parseStringFilter;
+
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +21,6 @@ import com.bestinsurance.api.mapper.CustomerResponseMapper;
 import com.bestinsurance.api.mapper.CustomerUpdateMapper;
 import com.bestinsurance.api.mapper.DTOMapper;
 import com.bestinsurance.api.model.Customer;
-import com.bestinsurance.api.service.CrudService;
 import com.bestinsurance.api.service.CustomerService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -24,6 +30,15 @@ import jakarta.persistence.EntityNotFoundException;
 @RestController
 @RequestMapping("/customers")
 public class CustomerController extends AbstractSimpleIdCrudController<CustomerCreateRequest, CustomerUpdateRequest, CustomerResponse, Customer> {
+
+    public static final String NAME = "name";
+    public static final String SURNAME = "surname";
+    public static final String EMAIL = "email";
+    public static final String AGE = "age";
+    public static final String AGE_FROM = "ageFrom";
+    public static final String AGE_TO = "ageTo";
+    public static final String ORDER_BY = "orderBy";
+    public static final String ORDER_DIRECTION = "orderDirection";
 
     private final CustomerService customerService;
     private final CustomerCreateMapper customerCreateMapper;
@@ -41,7 +56,7 @@ public class CustomerController extends AbstractSimpleIdCrudController<CustomerC
     }
 
     @Override
-    protected CrudService<Customer, UUID> getService() {
+    protected CustomerService getService() {
         return customerService;
     }
 
@@ -68,5 +83,29 @@ public class CustomerController extends AbstractSimpleIdCrudController<CustomerC
         Customer foundCustomer = getService().getById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Customer with id: " + id + " does not exist!"));
         return getSearchDtoMapper().map(foundCustomer);
+    }
+
+    @Override
+    @Parameter(in = ParameterIn.QUERY, name = NAME, description = "filters all the customers with a name containing a string", schema = @Schema(type = "string"))
+    @Parameter(in = ParameterIn.QUERY, name = SURNAME, description = "filters all the customers with a surname containing a string", schema = @Schema(type = "string"))
+    @Parameter(in = ParameterIn.QUERY, name = EMAIL, description = "filters all the customers with an email containing a string", schema = @Schema(type = "string"))
+    @Parameter(in = ParameterIn.QUERY, name = AGE_FROM, description = "filters all the customers by age interval, the starting age", example = "20", schema = @Schema(type = "number"))
+    @Parameter(in = ParameterIn.QUERY, name = AGE_TO, description = "filters all the customers by age interval, the ending age", example = "40", schema = @Schema(type = "number"))
+    @Parameter(in = ParameterIn.QUERY, name = ORDER_BY, description = "a string parameter that indicates which field should be used for sorting", schema = @Schema(type = "string", allowableValues = {NAME, SURNAME, EMAIL, AGE}))
+    @Parameter(in = ParameterIn.QUERY, name = ORDER_DIRECTION, description = "a string parameter that indicates which in which direction to sort by", schema = @Schema(type = "string", allowableValues = {"ASC", "DESC"}))
+    public List<CustomerResponse> all(Map<String, String> filters) {
+
+        String name = parseStringFilter(filters, NAME);
+        String surname = parseStringFilter(filters, SURNAME);
+        String email = parseStringFilter(filters, EMAIL);
+        Integer ageFrom = parseIntegerFilter(filters, AGE_FROM);
+        Integer ageTo = parseIntegerFilter(filters, AGE_TO);
+        CustomerService.CustomerOrderBy orderBy = parseCustomerOrderByFilter(filters.get(ORDER_BY));
+        Sort.Direction orderDirection = parseOrderDirection(filters.get(ORDER_DIRECTION));
+
+        List<Customer> allDomainObjects = getService().findAllWithFilters(name, surname, email, ageFrom, ageTo, orderBy, orderDirection);
+        return allDomainObjects.stream()
+                .map(getSearchDtoMapper()::map)
+                .toList();
     }
 }
