@@ -16,7 +16,7 @@ import com.bestinsurance.api.model.embedded.SubscriptionId;
 
 public class PersistenceEntitiesUtil {
 
-    public static Customer instanceCustomer(String name, String surname, LocalDate birthDate, String email, Address address) {
+    public static Customer instanceCustomer(String name, String surname, String email, LocalDate birthDate, Address address) {
         return Customer.builder()
                 .name(name)
                 .surname(surname)

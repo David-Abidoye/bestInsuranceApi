@@ -1,5 +1,6 @@
 package com.bestinsurance.api.mapper;
 
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -15,7 +16,7 @@ import com.bestinsurance.api.model.Customer;
 import com.bestinsurance.api.model.State;
 
 @Mapper(componentModel = "spring")
-public interface CustomerResponseMapper extends DTOMapper<Customer, CustomerResponse>{
+public interface CustomerResponseMapper extends DTOMapper<Customer, CustomerResponse> {
 
     @Override
     @Mapping(target = "address", source = "address")
@@ -35,4 +36,10 @@ public interface CustomerResponseMapper extends DTOMapper<Customer, CustomerResp
 
     @Named("mapCityView")
     CityView mapCityView(City city);
+
+    default List<CustomerResponse> mapCustomers(List<Customer> customers) {
+        return customers.stream()
+                .map(this::map)
+                .toList();
+    }
 }

@@ -54,7 +54,7 @@ class CustomerJpaTest {
         City createdCity = cityRepo.save(city);
         Address address = buildAddress(createdCity, createdState, createdCountry);
 
-        Customer aCustomer = instanceCustomer("customerName", "customerSurname", LocalDate.now().minusYears(20), "name.surname@customer.com", address);
+        Customer aCustomer = instanceCustomer("customerName", "customerSurname", "name.surname@customer.com", LocalDate.now().minusYears(20), address);
 
         Customer createdCustomer = testee.save(aCustomer);
 

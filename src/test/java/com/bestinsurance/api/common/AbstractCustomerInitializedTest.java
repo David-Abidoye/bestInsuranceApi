@@ -46,7 +46,7 @@ public abstract class AbstractCustomerInitializedTest {
         for (int i = 0; i < 10; i++) {
             char namePrefix = (char) ('A' + i);
             for (int j = 0; j < cityIds.length; j++) { //CREATE 5 customers for each prefix
-                save(instanceCustomer(namePrefix + "customerName", namePrefix + "customerSurname", ages[j], namePrefix + "N" + j + "@customer.com",
+                save(instanceCustomer(namePrefix + "customerName", namePrefix + "customerSurname", namePrefix + "N" + j + "@customer.com", ages[j],
                         instanceAddress("street test " + 1, "12345" + i, findCity(cityIds[j]))));
             }
         }
