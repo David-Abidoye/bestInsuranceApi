@@ -29,7 +29,7 @@ public abstract class AbstractCrudController<C, U, S, T, I> implements CrudContr
 
     @Override
     @GetMapping(produces = MEDIA_TYPE_JSON)
-    public List<S> all() {
+    public List<S> all(Map<String, String> filters) {
         List<T> allDomainObjects = getService().findAll();
         return allDomainObjects.stream()
                 .map(getSearchDtoMapper()::map)

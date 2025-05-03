@@ -3,6 +3,7 @@ package com.bestinsurance.api.common;
 import static com.bestinsurance.api.common.PersistenceEntitiesUtil.instanceAddress;
 import static com.bestinsurance.api.common.PersistenceEntitiesUtil.instanceCustomer;
 
+import java.time.LocalDate;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -37,10 +38,15 @@ public abstract class AbstractCustomerInitializedTest {
     @BeforeAll
     public void initializeDB() {
         this.cleanDB();
+        LocalDate[] ages = {LocalDate.now().minusYears(20),
+                LocalDate.now().minusYears(40),
+                LocalDate.now().minusYears(50),
+                LocalDate.now().minusYears(60),
+                LocalDate.now().minusYears(70)};
         for (int i = 0; i < 10; i++) {
             char namePrefix = (char) ('A' + i);
             for (int j = 0; j < cityIds.length; j++) { //CREATE 5 customers for each prefix
-                save(instanceCustomer(namePrefix + "customerName", namePrefix + "customerSurname", namePrefix + "N" + j + "@customer.com",
+                save(instanceCustomer(namePrefix + "customerName", namePrefix + "customerSurname", namePrefix + "N" + j + "@customer.com", ages[j],
                         instanceAddress("street test " + 1, "12345" + i, findCity(cityIds[j]))));
             }
         }

@@ -21,7 +21,7 @@ public class PolicyCreateRequest {
     @NotBlank(message = "Description cannot be blank")
     private String description;
     @NotNull(message = "Policy must have price")
-    @Digits(integer = 6, fraction = 2, message = "Invalid price entry")
+    @Digits(integer = 4, fraction = 2, message = "Invalid price entry")
     private BigDecimal price;
     @NotEmpty(message = "Coverages cannot be empty, a policy must have at least one coverage!")
     private Set<@NotBlank @Pattern(regexp = UUID_PATTERN,

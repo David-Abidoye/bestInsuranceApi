@@ -19,7 +19,7 @@ public class PolicyUpdateRequest {
 
     private String name;
     private String description;
-    @Digits(integer = 6, fraction = 2, message = "Invalid price entry")
+    @Digits(integer = 4, fraction = 2, message = "Invalid price entry")
     private BigDecimal price;
     @Size(min = 1, message = "Coverages cannot be empty, a policy must have at least one coverage!")
     private Set<@NotBlank @Pattern(regexp = UUID_PATTERN,

@@ -1,11 +1,15 @@
 package com.bestinsurance.api.dto;
 
+import static com.bestinsurance.api.helper.ConstraintHelper.DATE_PATTERN;
 import static com.bestinsurance.api.helper.ConstraintHelper.UUID_PATTERN;
 
+import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -24,6 +28,10 @@ public class CustomerCreateRequest {
 
     @NotBlank(message = "Surname cannot be blank")
     private String surname;
+
+    @NotNull
+    @JsonFormat(pattern = DATE_PATTERN)
+    private LocalDate birthDate;
 
     @NotBlank(message = "Email cannot be blank")
     @Email(message = "Invalid email format")

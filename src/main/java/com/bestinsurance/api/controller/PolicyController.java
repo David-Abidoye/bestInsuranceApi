@@ -1,5 +1,11 @@
 package com.bestinsurance.api.controller;
 
+import static com.bestinsurance.api.validation.utils.ValidationUtils.parsePolicyOrderByFilter;
+import static com.bestinsurance.api.validation.utils.ValidationUtils.parsePriceFilter;
+import static com.bestinsurance.api.validation.utils.ValidationUtils.parseStringFilter;
+
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +20,6 @@ import com.bestinsurance.api.mapper.PolicyCreateMapper;
 import com.bestinsurance.api.mapper.PolicyResponseMapper;
 import com.bestinsurance.api.mapper.PolicyUpdateMapper;
 import com.bestinsurance.api.model.Policy;
-import com.bestinsurance.api.service.CrudService;
 import com.bestinsurance.api.service.PolicyService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -41,7 +46,7 @@ public class PolicyController extends AbstractSimpleIdCrudController<PolicyCreat
     }
 
     @Override
-    protected CrudService<Policy, UUID> getService() {
+    protected PolicyService getService() {
         return policyService;
     }
 
@@ -68,5 +73,25 @@ public class PolicyController extends AbstractSimpleIdCrudController<PolicyCreat
         Policy foundPolicy = getService().getById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Policy with id: " + id + " does not exist!"));
         return getSearchDtoMapper().map(foundPolicy);
+    }
+
+    @Override
+    @Parameter(in = ParameterIn.QUERY, name = "nameContains", description = "filters all the policies with a name containing a string")
+    @Parameter(in = ParameterIn.QUERY, name = "price", description = "filters all the policies with a price equal to a number", example = "100")
+    @Parameter(in = ParameterIn.QUERY, name = "priceMoreThan", description = "filters all the policies with a price greater than a number", example = "100")
+    @Parameter(in = ParameterIn.QUERY, name = "priceLessThan", description = "filters all the policies with a price less than a number", example = "100")
+    @Parameter(in = ParameterIn.QUERY, name = "orderBy", description = "a string parameter that indicates which field (name or price) should be used for sorting", schema = @Schema(type = "string", allowableValues = {"NAME", "PRICE"}))
+    public List<PolicyResponse> all(Map<String, String> filters) {
+
+        BigDecimal priceMoreThan = parsePriceFilter(filters, "priceMoreThan");
+        BigDecimal priceLessThan = parsePriceFilter(filters, "priceLessThan");
+        BigDecimal price = parsePriceFilter(filters, "price");
+        String nameContains = parseStringFilter(filters, "nameContains");
+        PolicyService.PolicyOrderBy orderBy = parsePolicyOrderByFilter(filters.get("orderBy"));
+
+        List<Policy> allDomainObjects = getService().findAllWithFilters(priceMoreThan, priceLessThan, price, nameContains, orderBy);
+        return allDomainObjects.stream()
+                .map(getSearchDtoMapper()::map)
+                .toList();
     }
 }
