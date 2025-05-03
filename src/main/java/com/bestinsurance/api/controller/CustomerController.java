@@ -115,7 +115,7 @@ public class CustomerController extends AbstractSimpleIdCrudController<CustomerC
         validateAgeFilter(ageFrom, ageTo);
         CustomerService.CustomerOrderBy orderBy = parseCustomerOrderByFilter(filters.get(ORDER_BY));
         Sort.Direction orderDirection = parseOrderDirection(filters.get(ORDER_DIRECTION));
-        Integer pageNumber = parseIntegerFilter(filters, PAGE_NUMBER);
+        Integer pageNumber = Optional.ofNullable(parseIntegerFilter(filters, PAGE_NUMBER)).map(pageNo -> pageNo-1).orElse(null);
         Integer pageSize = Optional.ofNullable(parseIntegerFilter(filters, PAGE_SIZE)).orElse(10);
 
         List<Customer> allDomainObjects = getService().findAllWithFilters(name, surname, email, ageFrom, ageTo, orderBy, orderDirection, pageNumber, pageSize);
