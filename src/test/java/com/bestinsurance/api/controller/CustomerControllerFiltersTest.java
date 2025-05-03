@@ -138,6 +138,16 @@ class CustomerControllerFiltersTest extends AbstractCustomerInitializedTest {
         new CustomerSearchTestHelper().setEmail("AN").runTest(5);
     }
 
+    @Test
+    void testPageNumberWithNoPageSize() throws Exception {
+        new CustomerSearchTestHelper().setPageNumber("1").runTest(10);
+    }
+
+    @Test
+    void testPageNumberAndPageSize() throws Exception {
+        new CustomerSearchTestHelper().setPageNumber("1").setPageSize("20").runTest(20);
+    }
+
     private class CustomerSearchTestHelper {
         private String name;
         private String surname;
@@ -146,6 +156,8 @@ class CustomerControllerFiltersTest extends AbstractCustomerInitializedTest {
         private String ageTo;
         private String orderBy;
         private String orderDirection;
+        private String pageNumber;
+        private String pageSize;
 
         private void runTest(int expectedResults) throws Exception {
             MvcResult mvcResult = mockMvc.perform(get("/customers")
@@ -156,7 +168,9 @@ class CustomerControllerFiltersTest extends AbstractCustomerInitializedTest {
                             .queryParam(CustomerController.AGE_FROM, ageFrom)
                             .queryParam(CustomerController.AGE_TO, ageTo)
                             .queryParam(CustomerController.ORDER_BY, orderBy)
-                            .queryParam(CustomerController.ORDER_DIRECTION, orderDirection))
+                            .queryParam(CustomerController.ORDER_DIRECTION, orderDirection)
+                            .queryParam(CustomerController.PAGE_NUMBER, pageNumber)
+                            .queryParam(CustomerController.PAGE_SIZE, pageSize))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$", hasSize(expectedResults)))
                     .andReturn();
@@ -241,6 +255,16 @@ class CustomerControllerFiltersTest extends AbstractCustomerInitializedTest {
 
         public CustomerSearchTestHelper setOrderDirection(String orderDirection) {
             this.orderDirection = orderDirection;
+            return this;
+        }
+
+        public CustomerSearchTestHelper setPageNumber(String pageNumber) {
+            this.pageNumber = pageNumber;
+            return this;
+        }
+
+        public CustomerSearchTestHelper setPageSize(String pageSize) {
+            this.pageSize = pageSize;
             return this;
         }
     }

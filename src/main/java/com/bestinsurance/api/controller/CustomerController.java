@@ -5,10 +5,12 @@ import static com.bestinsurance.api.validation.utils.ValidationUtils.parseCustom
 import static com.bestinsurance.api.validation.utils.ValidationUtils.parseIntegerFilter;
 import static com.bestinsurance.api.validation.utils.ValidationUtils.parseOrderDirection;
 import static com.bestinsurance.api.validation.utils.ValidationUtils.parseStringFilter;
+import static com.bestinsurance.api.validation.utils.ValidationUtils.validateAgeFilter;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -45,6 +47,8 @@ public class CustomerController extends AbstractSimpleIdCrudController<CustomerC
     public static final String AGE_TO = "ageTo";
     public static final String ORDER_BY = "orderBy";
     public static final String ORDER_DIRECTION = "orderDirection";
+    public static final String PAGE_NUMBER = "pageNumber";
+    public static final String PAGE_SIZE = "pageSize";
 
     private final CustomerService customerService;
     private final CustomerCreateMapper customerCreateMapper;
@@ -99,6 +103,8 @@ public class CustomerController extends AbstractSimpleIdCrudController<CustomerC
     @Parameter(in = ParameterIn.QUERY, name = AGE_TO, description = "filters all the customers by age interval, the ending age", example = "40", schema = @Schema(type = "number"))
     @Parameter(in = ParameterIn.QUERY, name = ORDER_BY, description = "a string parameter that indicates which field should be used for sorting", schema = @Schema(type = "string", allowableValues = {NAME, SURNAME, EMAIL, AGE}))
     @Parameter(in = ParameterIn.QUERY, name = ORDER_DIRECTION, description = "a string parameter that indicates which in which direction to sort by", schema = @Schema(type = "string", allowableValues = {"ASC", "DESC"}))
+    @Parameter(in = ParameterIn.QUERY, name = PAGE_NUMBER, description = "the number of the page to return", example = "2", schema = @Schema(type = "number"))
+    @Parameter(in = ParameterIn.QUERY, name = PAGE_SIZE, description = "the size of the page to return", example = "5", schema = @Schema(type = "number", defaultValue = "10"))
     public List<CustomerResponse> all(Map<String, String> filters) {
 
         String name = parseStringFilter(filters, NAME);
@@ -106,10 +112,13 @@ public class CustomerController extends AbstractSimpleIdCrudController<CustomerC
         String email = parseStringFilter(filters, EMAIL);
         Integer ageFrom = parseIntegerFilter(filters, AGE_FROM);
         Integer ageTo = parseIntegerFilter(filters, AGE_TO);
+        validateAgeFilter(ageFrom, ageTo);
         CustomerService.CustomerOrderBy orderBy = parseCustomerOrderByFilter(filters.get(ORDER_BY));
         Sort.Direction orderDirection = parseOrderDirection(filters.get(ORDER_DIRECTION));
+        Integer pageNumber = parseIntegerFilter(filters, PAGE_NUMBER);
+        Integer pageSize = Optional.ofNullable(parseIntegerFilter(filters, PAGE_SIZE)).orElse(10);
 
-        List<Customer> allDomainObjects = getService().findAllWithFilters(name, surname, email, ageFrom, ageTo, orderBy, orderDirection);
+        List<Customer> allDomainObjects = getService().findAllWithFilters(name, surname, email, ageFrom, ageTo, orderBy, orderDirection, pageNumber, pageSize);
         return getSearchDtoMapper().mapCustomers(allDomainObjects);
     }
 

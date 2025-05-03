@@ -1,13 +1,16 @@
 package com.bestinsurance.api.mapper;
 
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import com.bestinsurance.api.dto.CustomerView;
 import com.bestinsurance.api.dto.PolicyView;
+import com.bestinsurance.api.dto.SubscriptionRevenueResponse;
 import com.bestinsurance.api.dto.SubscriptionResponse;
 import com.bestinsurance.api.model.Customer;
 import com.bestinsurance.api.model.Policy;
+import com.bestinsurance.api.model.SubscriptionRevenue;
 import com.bestinsurance.api.model.Subscription;
 
 @Mapper(componentModel = "spring")
@@ -23,4 +26,12 @@ public interface SubscriptionResponseMapper extends DTOMapper<Subscription, Subs
 
     @Named("mapPolicyView")
     PolicyView mapPolicyView(Policy policy);
+
+    SubscriptionRevenueResponse mapSubscriptionRevenueResponse(SubscriptionRevenue subscriptionRevenue);
+
+    default List<SubscriptionRevenueResponse> mapSubscriptionRevenueResponses(List<SubscriptionRevenue> subscriptionRevenues) {
+        return subscriptionRevenues.stream()
+                .map(this::mapSubscriptionRevenueResponse)
+                .toList();
+    }
 }

@@ -1,7 +1,9 @@
 package com.bestinsurance.api.service;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import com.bestinsurance.api.model.SubscriptionRevenue;
 import com.bestinsurance.api.model.Subscription;
 import com.bestinsurance.api.model.embedded.SubscriptionId;
 import com.bestinsurance.api.repos.SubscriptionRepository;
@@ -33,9 +35,13 @@ public class SubscriptionService extends AbstractCrudService<Subscription, Subsc
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Subscription with id: %s does not exist!", id)));
     }
 
-    public void updateSubscriptionFields(Subscription subscriptionToUpdate, Subscription subscriptionUpdateRequest) {
+    private void updateSubscriptionFields(Subscription subscriptionToUpdate, Subscription subscriptionUpdateRequest) {
         Optional.ofNullable(subscriptionUpdateRequest.getStartDate()).ifPresent(subscriptionToUpdate::setStartDate);
         Optional.ofNullable(subscriptionUpdateRequest.getEndDate()).ifPresent(subscriptionToUpdate::setEndDate);
         Optional.ofNullable(subscriptionUpdateRequest.getPaidPrice()).ifPresent(subscriptionToUpdate::setPaidPrice);
+    }
+
+    public List<SubscriptionRevenue> findStateSubscriptionRevenue(){
+        return getRepository().selectStateSubscriptionRevenue();
     }
 }

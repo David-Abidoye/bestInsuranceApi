@@ -79,7 +79,7 @@ public class ValidationUtils {
                 .orElse(null);
     }
 
-    public static void validateAgeFiler(Integer ageFrom, Integer ageTo) {
+    public static void validateAgeFilter(Integer ageFrom, Integer ageTo) {
         if (!(ageFrom == null && ageTo == null) && (ageFrom == null || ageTo == null)) {
             throw new IllegalArgumentException("When searching by age, ageFrom and ageTo are mandatory");
         }

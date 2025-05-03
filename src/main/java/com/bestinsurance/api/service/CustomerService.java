@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.convert.QueryByExamplePredicateBuilder;
 import org.springframework.data.jpa.domain.Specification;
@@ -95,7 +97,8 @@ public class CustomerService extends AbstractCrudService<Customer, UUID> {
     }
 
     public List<Customer> findAllWithFilters(String name, String surname, String email, Integer ageFrom,
-                                             Integer ageTo, CustomerOrderBy orderBy, Sort.Direction orderDirection) {
+                                             Integer ageTo, CustomerOrderBy orderBy, Sort.Direction orderDirection,
+                                             Integer pageNumber, Integer pageSize) {
 
         Example<Customer> customerExample = buildCustomerExample(name, surname, email);
 
@@ -103,7 +106,13 @@ public class CustomerService extends AbstractCrudService<Customer, UUID> {
 
         Sort sort = getSortOrder(orderBy, orderDirection);
 
-        return getRepository().findAll(customerSpecification, sort);
+        Pageable pageRequest = Optional.ofNullable(pageNumber)
+                .map(pageNum -> PageRequest.of(pageNum, pageSize, sort))
+                .orElse(null);
+
+        return Optional.ofNullable(pageRequest)
+                .map(pageReq -> getRepository().findAll(customerSpecification, pageReq).getContent())
+                .orElse(getRepository().findAll(customerSpecification, sort));
     }
 
     public List<Customer> findAllCustomersByPolicyId(UUID policyId) {

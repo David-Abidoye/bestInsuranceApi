@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.MultiValueMap;
 import com.bestinsurance.api.common.AbstractPolicyInitializedTest;
 import com.bestinsurance.api.dto.PolicyResponse;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -204,7 +205,7 @@ class PolicyControllerTest extends AbstractPolicyInitializedTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(size)))
                 .andReturn().getResponse();
-        return om.readValue(response.getContentAsString(), om.getTypeFactory().constructCollectionType(List.class, PolicyResponse.class));
+        return om.readValue(response.getContentAsString(), new TypeReference<>() {});
     }
 
     private void assertInvalidFiltersThrowsExceptionWithMessage(MultiValueMap<String, String> queryParameters, String message) throws Exception {
