@@ -45,8 +45,8 @@ public class CustomerCreateRequest {
     @JsonProperty("address")
     private String street;
 
-    @Digits(integer = 6, fraction = 0, message = "Postal code should be digits")
-    @Size(min = 6, max = 6, message = "Postal code should have 6 digits")
+    @Digits(integer = 5, fraction = 0, message = "Postal code should be digits")
+    @Size(min = 5, max = 5, message = "Postal code should have 5 digits")
     private String postalCode;
 
     @NotBlank(message = "Country id cannot be blank")

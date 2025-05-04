@@ -30,6 +30,8 @@ dependencies {
     implementation 'org.liquibase:liquibase-core'
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     implementation 'org.projectlombok:lombok:1.18.22'
+    implementation 'com.opencsv:opencsv:5.9'
+    implementation 'io.rest-assured:rest-assured:5.5.1'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     runtimeOnly 'org.postgresql:postgresql'

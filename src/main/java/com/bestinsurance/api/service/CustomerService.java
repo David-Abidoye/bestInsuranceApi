@@ -90,10 +90,20 @@ public class CustomerService extends AbstractCrudService<Customer, UUID> {
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Customer with id: %s does not exist!", id)));
     }
 
+    public Customer update(Customer existingCustomer, Customer incomingCustomer) {
+        log.debug("Updating customer with id: [{}]", existingCustomer.getId());
+        updateCustomerFields(existingCustomer, incomingCustomer);
+        return getRepository().save(existingCustomer);
+    }
+
     @Override
     public void delete(UUID id) {
         log.debug("Deleting customer with id: {}", id);
         super.delete(id);
+    }
+
+    public Optional<Customer> getByEmail(String email) {
+        return getRepository().findByEmail(email);
     }
 
     public List<Customer> findAllWithFilters(String name, String surname, String email, Integer ageFrom,
@@ -197,7 +207,7 @@ public class CustomerService extends AbstractCrudService<Customer, UUID> {
 
     private void updateCustomerFields(Customer customerToUpdate, Customer customer) {
         Optional.ofNullable(customer.getEmail()).ifPresent(email -> {
-            if (getRepository().existsByEmail(email)) {
+            if (!email.equals(customerToUpdate.getEmail()) && getRepository().existsByEmail(email)) {
                 log.debug("Email {} already exists", email);
                 throw new EntityExistsException("Cannot update! Email: " + email + " already exists");
             } else {

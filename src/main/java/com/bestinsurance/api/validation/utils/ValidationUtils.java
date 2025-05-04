@@ -1,6 +1,11 @@
 package com.bestinsurance.api.validation.utils;
 
+import static com.bestinsurance.api.helper.ConstraintHelper.DATE_PATTERN;
+
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.data.domain.Sort;
@@ -13,7 +18,11 @@ import lombok.NoArgsConstructor;
 public class ValidationUtils {
 
     public static BigDecimal parsePriceFilter(Map<String, String> filters, String key) {
-        return Optional.ofNullable(filters.get(key))
+        return parsePrice(filters.get(key));
+    }
+
+    public static BigDecimal parsePrice(String price) {
+        return Optional.ofNullable(price)
                 .map(ValidationUtils::validateAndReturnPrice)
                 .orElse(null);
     }
@@ -29,16 +38,20 @@ public class ValidationUtils {
                 .orElse(null);
     }
 
-    public static String parseStringFilter(Map<String, String> filters, String key) {
-        return Optional.ofNullable(filters.get(key))
+    public static String parseString(String stringToParse) {
+        return Optional.ofNullable(stringToParse)
                 .map(s -> {
                     if (!s.isBlank()) {
                         return s;
                     } else {
-                        throw new IllegalArgumentException(String.format("%s cannot be blank", key));
+                        throw new IllegalArgumentException(String.format("%s cannot be blank", stringToParse));
                     }
                 })
                 .orElse(null);
+    }
+
+    public static String parseStringFilter(Map<String, String> filters, String key) {
+        return parseString(filters.get(key));
     }
 
     public static Integer parseIntegerFilter(Map<String, String> filters, String key) {
@@ -75,6 +88,18 @@ public class ValidationUtils {
                         throw new IllegalArgumentException(String.format("Invalid parameter to define direction: %s. Accepted values are ASC and DESC: ", o));
                     }
                     return Sort.Direction.valueOf(o);
+                })
+                .orElse(null);
+    }
+
+    public static LocalDate parseDate(String dateToParse) {
+        return Optional.ofNullable(dateToParse)
+                .map(date -> {
+                    try {
+                        return LocalDate.parse(date, DateTimeFormatter.ofPattern(DATE_PATTERN));
+                    } catch (DateTimeParseException ex) {
+                        throw new IllegalArgumentException(String.format("Date [%s] not properly formatted according to pattern yyyy-MM-dd", dateToParse));
+                    }
                 })
                 .orElse(null);
     }
