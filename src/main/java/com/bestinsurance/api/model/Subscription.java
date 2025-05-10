@@ -5,8 +5,10 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.domain.DomainEvents;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.bestinsurance.api.model.embedded.SubscriptionId;
+import com.bestinsurance.api.model.events.SubscriptionUpdatedEvent;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -48,11 +50,11 @@ public class Subscription implements DomainObject<SubscriptionId> {
     private Customer customer;
 
     @NotNull
-    @Column(name="START_DATE", nullable = false)
+    @Column(name = "START_DATE", nullable = false)
     private LocalDate startDate;
 
     @NotNull
-    @Column(name="END_DATE", nullable = false)
+    @Column(name = "END_DATE", nullable = false)
     private LocalDate endDate;
 
     @NotNull
@@ -60,10 +62,15 @@ public class Subscription implements DomainObject<SubscriptionId> {
     private BigDecimal paidPrice;
 
     @CreatedDate
-    @Column(name="CREATED", nullable = false, updatable = false)
+    @Column(name = "CREATED", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
     @LastModifiedDate
-    @Column(name="UPDATED", nullable = false)
+    @Column(name = "UPDATED", nullable = false)
     private OffsetDateTime updatedAt;
+
+    @DomainEvents
+    public SubscriptionUpdatedEvent subscriptionUpdatedEvent() {
+        return new SubscriptionUpdatedEvent(this);
+    }
 }

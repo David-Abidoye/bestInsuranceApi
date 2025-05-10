@@ -16,6 +16,7 @@ java {
 ext {
     mapstructVersion = '1.6.1'
     testContainerVersion = '1.20.6'
+    lombokVersion = '1.18.22'
 }
 
 repositories {
@@ -29,10 +30,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.liquibase:liquibase-core'
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
-    implementation 'org.projectlombok:lombok:1.18.22'
+    implementation "org.projectlombok:lombok:${lombokVersion}"
     implementation 'com.opencsv:opencsv:5.9'
     implementation 'io.rest-assured:rest-assured:5.5.1'
-    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    implementation 'org.springframework.boot:spring-boot-starter-artemis'
+    implementation 'org.apache.activemq:artemis-jakarta-server:2.41.0'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0'
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     runtimeOnly 'org.postgresql:postgresql'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

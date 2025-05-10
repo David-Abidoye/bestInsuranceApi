@@ -2,6 +2,7 @@ package com.bestinsurance.api.controller;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -13,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -21,11 +23,15 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import com.bestinsurance.api.dto.SubscriptionCreateRequest;
+import com.bestinsurance.api.dto.SubscriptionLogMsg;
 import com.bestinsurance.api.model.Address;
 import com.bestinsurance.api.model.City;
 import com.bestinsurance.api.model.Country;
@@ -41,13 +47,18 @@ import com.bestinsurance.api.repos.PolicyRepository;
 import com.bestinsurance.api.repos.SubscriptionRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.jms.Message;
+import jakarta.jms.TextMessage;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"eventlistener.enabled=true"})
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SubscriptionCRUDControllerTest {
 
     private static final ObjectMapper om = new ObjectMapper();
+
+    @Value("${eventlistener.queue.name}")
+    private String queueName;
 
     @Autowired
     private CustomerRepository customerRepository;
@@ -63,11 +74,16 @@ class SubscriptionCRUDControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private JmsTemplate jmsTemplate;
+
+    @Autowired
+    private MappingJackson2MessageConverter messageConverter;
+
     private Customer customer;
     private Policy policy;
 
     private Subscription subscription;
-
 
     @BeforeAll
     void init() {
@@ -85,7 +101,7 @@ class SubscriptionCRUDControllerTest {
     }
 
     @Test
-    void testCreateSubscription() throws Exception  {
+    void testCreateSubscription() throws Exception {
         SubscriptionCreateRequest subscriptionDTO = new SubscriptionCreateRequest();
         subscriptionDTO.setCustomerId(this.customer.getId().toString());
         // Let's create a new policy to create a new subscription
@@ -95,26 +111,28 @@ class SubscriptionCRUDControllerTest {
         subscriptionDTO.setEndDate(LocalDate.now().plusYears(1));
         subscriptionDTO.setPaidPrice(new BigDecimal(100.00));
         mockMvc.perform(post("/subscriptions")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(subscriptionDTO)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(om.writeValueAsString(subscriptionDTO)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.customer.id", notNullValue()))
                 .andExpect(jsonPath("$.policy.id", notNullValue()))
                 .andReturn();
+
+        assertJMSQueue(this.customer.getId(), this.policy.getId());
     }
 
     @Test
     void testFindById() throws Exception {
-         mockMvc.perform(get("/subscriptions/{idCustomer}/{idPolicy}", this.subscription.getCustomer().getId().toString()
-                         , this.subscription.getPolicy().getId().toString())
-                 .contentType(MediaType.APPLICATION_JSON)
-                 .queryParam("idCustomer", this.customer.getId().toString())
-                 .queryParam("idPolicy", this.policy.getId().toString()))
-                 .andDo(print())
-                 .andExpect(status().isOk())
-                 .andExpect(jsonPath("$.customer.id", notNullValue()))
-                 .andExpect(jsonPath("$.policy.id", notNullValue()));
+        mockMvc.perform(get("/subscriptions/{idCustomer}/{idPolicy}", this.subscription.getCustomer().getId().toString()
+                        , this.subscription.getPolicy().getId().toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .queryParam("idCustomer", this.customer.getId().toString())
+                        .queryParam("idPolicy", this.policy.getId().toString()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customer.id", notNullValue()))
+                .andExpect(jsonPath("$.policy.id", notNullValue()));
     }
 
     @Test
@@ -140,6 +158,8 @@ class SubscriptionCRUDControllerTest {
                 .andExpect(jsonPath("$.policy.id", notNullValue()))
                 .andExpect(jsonPath("$.paidPrice", is(150)))
                 .andExpect(jsonPath("$.endDate", is(formattedDateTime)));
+
+        assertJMSQueue(this.customer.getId(), this.policy.getId());
     }
 
     @Test
@@ -154,9 +174,10 @@ class SubscriptionCRUDControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
+        assertJMSQueue(this.customer.getId(), this.policy.getId());
     }
 
-    private Customer createTestCustomer(){
+    private Customer createTestCustomer() {
         Customer customer = new Customer();
         customer.setName("testNameSubs");
         customer.setSurname("testSurnameSubs");
@@ -177,10 +198,11 @@ class SubscriptionCRUDControllerTest {
         customer.setAddress(address);
         return customerRepository.save(customer);
     }
+
     //SAve and return result
     private Policy createTestPolicy(String name) {
         Set<Coverage> coverages = new LinkedHashSet<>();
-        for (int i=0; i <= 2; i++) {
+        for (int i = 0; i <= 2; i++) {
             Coverage coverage = new Coverage();
             coverage.setName("testCoverage" + i);
             coverage.setDescription("subs coverage description " + i);
@@ -210,4 +232,20 @@ class SubscriptionCRUDControllerTest {
         return subscriptionRepository.save(subscription);
     }
 
+    private void assertJMSQueue(UUID expectedCustomerId, UUID expectedPolicyId) {
+        boolean messageFound = Boolean.TRUE.equals(jmsTemplate.browse(queueName, (session, browser) -> {
+            Enumeration<?> messages = browser.getEnumeration();
+            while (messages.hasMoreElements()) {
+                Message message = (Message) messages.nextElement();
+                if (message instanceof TextMessage) {
+                    SubscriptionLogMsg actualSubscriptionMessage = (SubscriptionLogMsg) messageConverter.fromMessage(message);
+                    if (actualSubscriptionMessage.getCustomerId().equals(expectedCustomerId) && actualSubscriptionMessage.getPolicyId().equals(expectedPolicyId)) {
+                        return true;
+                    }
+                }
+            }
+            return false; // No matching message found
+        }));
+        assertTrue(messageFound, "Expected message was not found in the queue");
+    }
 }
