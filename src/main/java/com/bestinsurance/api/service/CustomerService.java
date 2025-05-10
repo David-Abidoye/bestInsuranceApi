@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.convert.QueryByExamplePredicateBuilder;
 import org.springframework.data.jpa.domain.Specification;
@@ -88,14 +90,25 @@ public class CustomerService extends AbstractCrudService<Customer, UUID> {
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Customer with id: %s does not exist!", id)));
     }
 
+    public Customer update(Customer existingCustomer, Customer incomingCustomer) {
+        log.debug("Updating customer with id: [{}]", existingCustomer.getId());
+        updateCustomerFields(existingCustomer, incomingCustomer);
+        return getRepository().save(existingCustomer);
+    }
+
     @Override
     public void delete(UUID id) {
         log.debug("Deleting customer with id: {}", id);
         super.delete(id);
     }
 
+    public Optional<Customer> getByEmail(String email) {
+        return getRepository().findByEmail(email);
+    }
+
     public List<Customer> findAllWithFilters(String name, String surname, String email, Integer ageFrom,
-                                             Integer ageTo, CustomerOrderBy orderBy, Sort.Direction orderDirection) {
+                                             Integer ageTo, CustomerOrderBy orderBy, Sort.Direction orderDirection,
+                                             Integer pageNumber, Integer pageSize) {
 
         Example<Customer> customerExample = buildCustomerExample(name, surname, email);
 
@@ -103,7 +116,13 @@ public class CustomerService extends AbstractCrudService<Customer, UUID> {
 
         Sort sort = getSortOrder(orderBy, orderDirection);
 
-        return getRepository().findAll(customerSpecification, sort);
+        Pageable pageRequest = Optional.ofNullable(pageNumber)
+                .map(pageNum -> PageRequest.of(pageNum, pageSize, sort))
+                .orElse(null);
+
+        return Optional.ofNullable(pageRequest)
+                .map(pageReq -> getRepository().findAll(customerSpecification, pageReq).getContent())
+                .orElse(getRepository().findAll(customerSpecification, sort));
     }
 
     public List<Customer> findAllCustomersByPolicyId(UUID policyId) {
@@ -188,7 +207,7 @@ public class CustomerService extends AbstractCrudService<Customer, UUID> {
 
     private void updateCustomerFields(Customer customerToUpdate, Customer customer) {
         Optional.ofNullable(customer.getEmail()).ifPresent(email -> {
-            if (getRepository().existsByEmail(email)) {
+            if (!email.equals(customerToUpdate.getEmail()) && getRepository().existsByEmail(email)) {
                 log.debug("Email {} already exists", email);
                 throw new EntityExistsException("Cannot update! Email: " + email + " already exists");
             } else {
