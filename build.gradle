@@ -1,51 +1,30 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.4.3'
-	id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
+    id 'org.springframework.boot' version '3.4.3' apply false
+    id 'io.spring.dependency-management' version '1.1.7' apply false
 }
 
-group = 'com.bestinsurance'
-version = '0.0.1-SNAPSHOT'
+allprojects {
+    group = 'com.bestinsurance'
+    version = '0.0.1-SNAPSHOT'
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
 }
 
-ext {
-    mapstructVersion = '1.6.1'
-    testContainerVersion = '1.20.6'
-    lombokVersion = '1.18.22'
-}
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
 
-repositories {
-	mavenCentral()
-}
-
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.liquibase:liquibase-core'
-    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
-    implementation "org.projectlombok:lombok:${lombokVersion}"
-    implementation 'com.opencsv:opencsv:5.9'
-    implementation 'io.rest-assured:rest-assured:5.5.1'
-    implementation 'org.springframework.boot:spring-boot-starter-artemis'
-    implementation 'org.apache.activemq:artemis-jakarta-server:2.41.0'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0'
-    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
-    runtimeOnly 'org.postgresql:postgresql'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation "org.testcontainers:testcontainers:${testContainerVersion}"
-    testImplementation "org.testcontainers:junit-jupiter:${testContainerVersion}"
-    testImplementation "org.testcontainers:postgresql:${testContainerVersion}"
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
 }
