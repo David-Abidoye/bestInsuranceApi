@@ -1,1 +1,2 @@
-rootProject.name = 'bestInsuranceApi'
+rootProject.name = 'best-insurance-parent'
+include('best-insurance-api', 'best-insurance-oauth2-server')
