@@ -2,3 +2,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
+
+tasks.named("bootBuildImage") {
+    imageName = "davidabidoye/best-insurance-oauth2-server"
+}

@@ -29,3 +29,7 @@ dependencies {
     testImplementation "org.testcontainers:postgresql:${testContainerVersion}"
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
+
+tasks.named("bootBuildImage") {
+    imageName = "davidabidoye/best-insurance-api"
+}
