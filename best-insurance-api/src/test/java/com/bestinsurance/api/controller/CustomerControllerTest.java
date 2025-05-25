@@ -1,8 +1,11 @@
 package com.bestinsurance.api.controller;
 
+import static com.bestinsurance.api.security.Roles.ADMIN;
+import static com.bestinsurance.api.security.Roles.CUSTOMER;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -61,6 +64,7 @@ class CustomerControllerTest {
                 .build();
 
         mockMvc.perform(post("/customers")
+                        .with(user("customer").roles(CUSTOMER))
                         .content(om.writeValueAsString(customerCreateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -74,6 +78,7 @@ class CustomerControllerTest {
     void shouldGetCustomerById_whenValidId() throws Exception {
         String id = JsonPath.parse(saveACustomer()).read("$.id");
         mockMvc.perform(get("/customers/{id}", id)
+                        .with(user("customer").roles(CUSTOMER))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -89,6 +94,7 @@ class CustomerControllerTest {
     void shouldGetAllCustomers() throws Exception {
         saveACustomer();
         mockMvc.perform(get("/customers")
+                        .with(user("admin").roles(ADMIN))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -109,6 +115,7 @@ class CustomerControllerTest {
                 .build();
 
         mockMvc.perform(put("/customers/{id}", id)
+                        .with(user("customer").roles(CUSTOMER))
                         .content(om.writeValueAsString(customerUpdateRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -129,7 +136,8 @@ class CustomerControllerTest {
     void shouldDeleteACustomer() throws Exception {
         String id = JsonPath.parse(saveACustomer()).read("$.id");
 
-        mockMvc.perform(delete("/customers/{id}", id))
+        mockMvc.perform(delete("/customers/{id}", id)
+                        .with(user("admin").roles(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -137,7 +145,8 @@ class CustomerControllerTest {
     @Test
     void getCustomerById_shouldReturnNotFound_whenIdNotExists() throws Exception {
         mockMvc.perform(get("/customers/4e778109-e65d-4907-bf03-d2fc989ea34c")
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .with(user("customer").roles(CUSTOMER)))
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message", is("Resource not found: Customer with id: 4e778109-e65d-4907-bf03-d2fc989ea34c does not exist!")))
@@ -161,7 +170,8 @@ class CustomerControllerTest {
 
         mockMvc.perform(post("/customers")
                         .content(om.writeValueAsString(customerCreateRequest))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(user("customer").roles(CUSTOMER)))
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message", is("Customer with email testEmail@email.com already exists")))
@@ -183,7 +193,8 @@ class CustomerControllerTest {
 
         MockHttpServletResponse response = mockMvc.perform(post("/customers")
                         .content(om.writeValueAsString(customerCreateRequest))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(user("customer").roles(CUSTOMER)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", notNullValue()))

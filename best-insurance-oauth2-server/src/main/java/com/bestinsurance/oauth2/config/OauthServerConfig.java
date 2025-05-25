@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -83,7 +84,7 @@ public class OauthServerConfig {
     @Bean
     public CorsConfigurationSource corsConfiguration() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost", "http://localhost:9090"));
+        config.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost", "http://localhost:9090", "http://auth-server", "http://auth-server:9090"));
         config.setAllowedMethods(List.of("GET", "POST", "OPTIONS", "DELETE"));
         config.setAllowedHeaders(List.of("authorization", "x-requested-with"));
         config.setAllowCredentials(true);
@@ -182,8 +183,10 @@ public class OauthServerConfig {
     }
 
     @Bean
-    public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().build();
+    public AuthorizationServerSettings authorizationServerSettings(@Value("${spring.security.oauth2.authorizationserver.issuer}") String issuer) {
+        return AuthorizationServerSettings.builder()
+                .issuer(issuer)
+                .build();
     }
 
     enum Roles {

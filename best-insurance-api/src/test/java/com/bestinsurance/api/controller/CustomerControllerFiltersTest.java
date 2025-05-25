@@ -1,7 +1,9 @@
 package com.bestinsurance.api.controller;
 
+import static com.bestinsurance.api.security.Roles.ADMIN;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -161,6 +163,7 @@ class CustomerControllerFiltersTest extends AbstractCustomerInitializedTest {
 
         private void runTest(int expectedResults) throws Exception {
             MvcResult mvcResult = mockMvc.perform(get("/customers")
+                            .with(user("admin").roles(ADMIN))
                             .contentType(MediaType.APPLICATION_JSON)
                             .queryParam(CustomerController.NAME, name)
                             .queryParam(CustomerController.SURNAME, surname)

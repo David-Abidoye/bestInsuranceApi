@@ -1,8 +1,11 @@
 package com.bestinsurance.api.controller;
 
+import static com.bestinsurance.api.security.Roles.ADMIN;
+import static com.bestinsurance.api.security.Roles.CUSTOMER;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -199,6 +202,7 @@ class PolicyControllerTest extends AbstractPolicyInitializedTest {
 
     private List<PolicyResponse> assertPoliciesRequestWithFiltersReturnsExpectedSize(MultiValueMap<String, String> queryParameters, int size) throws Exception {
         MockHttpServletResponse response = mockMvc.perform(get("/policies")
+                        .with(user("admin").roles(ADMIN))
                         .queryParams(queryParameters)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -210,6 +214,7 @@ class PolicyControllerTest extends AbstractPolicyInitializedTest {
 
     private void assertInvalidFiltersThrowsExceptionWithMessage(MultiValueMap<String, String> queryParameters, String message) throws Exception {
         mockMvc.perform(get("/policies")
+                        .with(user("admin").roles(ADMIN))
                         .queryParams(queryParameters)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
