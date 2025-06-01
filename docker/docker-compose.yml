@@ -31,6 +31,8 @@ services:
       EVENTLISTENER_QUEUE_NAME: subscriptionLogQueue
       EVENTLISTENER_ENABLED: true
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://auth-server:9090
+      SPRINGDOC_OAUTHFLOW_AUTHORIZATIONURL: http://localhost:9090/oauth2/authorize
+      SPRINGDOC_OAUTHFLOW_TOKENURL: http://localhost:9090/oauth2/token
     depends_on:
       - db
       - oauth-server

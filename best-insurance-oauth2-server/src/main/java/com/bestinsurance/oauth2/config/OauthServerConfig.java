@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
@@ -43,8 +44,8 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.CorsConfigurationSource;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
@@ -59,7 +60,10 @@ public class OauthServerConfig {
     public SecurityFilterChain oauth2ServerSecurityFilterChain(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
                 OAuth2AuthorizationServerConfigurer.authorizationServer();
-        return http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+        return http
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll())
+                .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 .with(authorizationServerConfigurer,
                         authorisationServer -> authorisationServer.oidc(Customizer.withDefaults()))
                 .authorizeHttpRequests(httpRequest -> httpRequest.anyRequest().authenticated())
@@ -67,7 +71,7 @@ public class OauthServerConfig {
                 .formLogin(Customizer.withDefaults())
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
-                .cors(Customizer.withDefaults())
+                .cors(corsConfiguration -> corsConfiguration.configurationSource(corsConfiguration()))
                 .build();
     }
 
@@ -75,18 +79,20 @@ public class OauthServerConfig {
     @Order(2)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
-                .cors(Customizer.withDefaults())
+                .cors(corsConfiguration -> corsConfiguration.configurationSource(corsConfiguration()))
                 .build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfiguration() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost", "http://localhost:9090", "http://auth-server", "http://auth-server:9090"));
+        config.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost", "http://127.0.0.1", "http://127.0.0.1:8080", "http://localhost:9090", "http://auth-server", "http://auth-server:9090"));
         config.setAllowedMethods(List.of("GET", "POST", "OPTIONS", "DELETE"));
-        config.setAllowedHeaders(List.of("authorization", "x-requested-with"));
+        config.setAllowedHeaders(List.of("authorization", "x-requested-with", "content-type"));
         config.setAllowCredentials(true);
         config.validateAllowCredentials();
         config.setMaxAge(1728000L);
@@ -130,6 +136,7 @@ public class OauthServerConfig {
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .redirectUri("http://127.0.0.1:8080/swagger-ui/oauth2-redirect.html")
+                .redirectUri("http://localhost:8080/swagger-ui/oauth2-redirect.html")
                 .redirectUri("https://oauth.pstmn.io/v1/browser-callback")
                 .redirectUri("https://oidcdebugger.com/debug")
                 .scope(OPENID)
