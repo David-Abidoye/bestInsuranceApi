@@ -3,6 +3,7 @@ services:
   db:
     image: postgres:15
     container_name: bi_docker_database
+    hostname: db
     restart: unless-stopped
     ports:
       - 5432:5432
@@ -13,9 +14,9 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
 
-  bestInsurance:
+  app-api:
     image: davidabidoye/best-insurance-api:latest
-    container_name: bi_docker_bestInsurance
+    container_name: bi_docker_api
     restart: always
     ports:
       - 8080:8080
@@ -29,8 +30,22 @@ services:
       DATALOADER_LOADSAMPLE: true
       EVENTLISTENER_QUEUE_NAME: subscriptionLogQueue
       EVENTLISTENER_ENABLED: true
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://auth-server:9090
+      SPRINGDOC_OAUTHFLOW_AUTHORIZATIONURL: http://localhost:9090/oauth2/authorize
+      SPRINGDOC_OAUTHFLOW_TOKENURL: http://localhost:9090/oauth2/token
     depends_on:
       - db
+      - oauth-server
+
+  oauth-server:
+    image: davidabidoye/best-insurance-oauth2-server:latest
+    container_name: bi_docker_auth_server
+    hostname: auth-server
+    restart: always
+    ports:
+      - 9090:9090
+    environment:
+      SPRING_SECURITY_OAUTH2_AUTHORIZATIONSERVER_ISSUER: http://auth-server:9090
 
   adminer:
     image: adminer
@@ -40,6 +55,6 @@ services:
       - 8081:8080
 
 volumes:
-    db-data:
+  db-data:
 
 

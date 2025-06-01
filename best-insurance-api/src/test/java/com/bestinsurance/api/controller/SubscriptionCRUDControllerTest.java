@@ -1,8 +1,10 @@
 package com.bestinsurance.api.controller;
 
+import static com.bestinsurance.api.security.Roles.ADMIN;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -112,7 +114,8 @@ class SubscriptionCRUDControllerTest {
         subscriptionDTO.setPaidPrice(new BigDecimal(100.00));
         mockMvc.perform(post("/subscriptions")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(om.writeValueAsString(subscriptionDTO)))
+                        .content(om.writeValueAsString(subscriptionDTO))
+                        .with(user("admin").roles(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.customer.id", notNullValue()))
@@ -128,7 +131,8 @@ class SubscriptionCRUDControllerTest {
                         , this.subscription.getPolicy().getId().toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .queryParam("idCustomer", this.customer.getId().toString())
-                        .queryParam("idPolicy", this.policy.getId().toString()))
+                        .queryParam("idPolicy", this.policy.getId().toString())
+                        .with(user("admin").roles(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.customer.id", notNullValue()))
@@ -151,7 +155,8 @@ class SubscriptionCRUDControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .queryParam("idCustomer", this.customer.getId().toString())
                         .queryParam("idPolicy", this.policy.getId().toString())
-                        .content(om.writeValueAsString(subscriptionDTO)))
+                        .content(om.writeValueAsString(subscriptionDTO))
+                        .with(user("admin").roles(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.customer.id", notNullValue()))
@@ -170,7 +175,8 @@ class SubscriptionCRUDControllerTest {
                         , subscription1.getPolicy().getId().toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .queryParam("idCustomer", customer.getId().toString())
-                        .queryParam("idPolicy", testPolicy.getId().toString()))
+                        .queryParam("idPolicy", testPolicy.getId().toString())
+                        .with(user("admin").roles(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isOk());
 

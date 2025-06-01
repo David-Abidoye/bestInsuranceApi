@@ -19,11 +19,13 @@ import com.bestinsurance.api.service.CrudService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/coverages")
-public class CoverageController extends AbstractSimpleIdCrudController<CoverageCreateRequest, CoverageUpdateRequest, CoverageResponse, Coverage>{
+@SecurityRequirement(name = "bestInsurance")
+public class CoverageController extends AbstractSimpleIdCrudController<CoverageCreateRequest, CoverageUpdateRequest, CoverageResponse, Coverage> {
 
     private final CoverageService coverageService;
     private final CoverageCreateMapper coverageCreateMapper;

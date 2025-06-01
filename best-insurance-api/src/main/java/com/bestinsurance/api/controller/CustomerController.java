@@ -31,12 +31,14 @@ import com.bestinsurance.api.service.CustomerService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 
 @Valid
 @RestController
 @RequestMapping("/customers")
+@SecurityRequirement(name = "bestInsurance")
 public class CustomerController extends AbstractSimpleIdCrudController<CustomerCreateRequest, CustomerUpdateRequest, CustomerResponse, Customer> {
 
     public static final String NAME = "name";
@@ -115,7 +117,7 @@ public class CustomerController extends AbstractSimpleIdCrudController<CustomerC
         validateAgeFilter(ageFrom, ageTo);
         CustomerService.CustomerOrderBy orderBy = parseCustomerOrderByFilter(filters.get(ORDER_BY));
         Sort.Direction orderDirection = parseOrderDirection(filters.get(ORDER_DIRECTION));
-        Integer pageNumber = Optional.ofNullable(parseIntegerFilter(filters, PAGE_NUMBER)).map(pageNo -> pageNo-1).orElse(null);
+        Integer pageNumber = Optional.ofNullable(parseIntegerFilter(filters, PAGE_NUMBER)).map(pageNo -> pageNo - 1).orElse(null);
         Integer pageSize = Optional.ofNullable(parseIntegerFilter(filters, PAGE_SIZE)).orElse(10);
 
         List<Customer> allDomainObjects = getService().findAllWithFilters(name, surname, email, ageFrom, ageTo, orderBy, orderDirection, pageNumber, pageSize);

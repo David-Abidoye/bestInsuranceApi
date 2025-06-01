@@ -1,6 +1,8 @@
 package com.bestinsurance.api.controller;
 
+import static com.bestinsurance.api.security.Roles.FRONT_OFFICE;
 import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,6 +27,7 @@ class CustomerControllerSearchTest extends AbstractCustomerWithAssociationsTest 
     @Test
     void testSelectCustomersByPolicy() throws Exception {
         mockMvc.perform(get("/customers/policy/{id}", policies.get(0).getId().toString())
+                        .with(user("front_office_user").roles(FRONT_OFFICE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)));
@@ -33,6 +36,7 @@ class CustomerControllerSearchTest extends AbstractCustomerWithAssociationsTest 
     @Test
     void testSelectCustomersByCoverage() throws Exception {
         mockMvc.perform(get("/customers/coverage/{id}", coverages.get(0).getId().toString())
+                        .with(user("front_office_user").roles(FRONT_OFFICE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)));
@@ -45,6 +49,7 @@ class CustomerControllerSearchTest extends AbstractCustomerWithAssociationsTest 
         LocalDate endDate = LocalDate.now().plusMonths(7);
         String endDateString = endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         mockMvc.perform(get("/customers/subscriptions")
+                        .with(user("front_office_user").roles(FRONT_OFFICE))
                         .contentType(MediaType.APPLICATION_JSON)
                         .queryParam("startDate", startDateString)
                         .queryParam("endDate", endDateString))
@@ -55,6 +60,7 @@ class CustomerControllerSearchTest extends AbstractCustomerWithAssociationsTest 
     @Test
     void testSelectCustomersWithDiscount() throws Exception {
         mockMvc.perform(get("/customers/subscriptions/discountedPrice")
+                        .with(user("front_office_user").roles(FRONT_OFFICE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(7)));

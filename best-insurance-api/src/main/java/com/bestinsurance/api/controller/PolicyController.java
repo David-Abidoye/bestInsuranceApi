@@ -24,10 +24,12 @@ import com.bestinsurance.api.service.PolicyService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/policies")
+@SecurityRequirement(name = "bestInsurance")
 public class PolicyController extends AbstractSimpleIdCrudController<PolicyCreateRequest, PolicyUpdateRequest, PolicyResponse, Policy> {
 
     private final PolicyService policyService;

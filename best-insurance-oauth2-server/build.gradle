@@ -1,4 +1,14 @@
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+bootBuildImage {
+    imageName = "davidabidoye/best-insurance-oauth2-server:latest"
 }

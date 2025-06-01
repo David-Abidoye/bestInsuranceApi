@@ -31,10 +31,12 @@ import com.bestinsurance.api.service.SubscriptionService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping(value = "/subscriptions")
+@SecurityRequirement(name = "bestInsurance")
 public class SubscriptionController extends AbstractCrudController<SubscriptionCreateRequest, SubscriptionUpdateRequest, SubscriptionResponse, Subscription, SubscriptionId> {
 
     private final SubscriptionService subscriptionService;

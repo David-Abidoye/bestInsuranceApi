@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -100,7 +101,7 @@ public class CsvService {
     }
 
     private List<SubscriptionCsv> parseCsv(MultipartFile file) throws IOException {
-        try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+        try (Reader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
             HeaderColumnNameMappingStrategy<SubscriptionCsv> strategy = new HeaderColumnNameMappingStrategy<>();
             strategy.setType(SubscriptionCsv.class);
             CsvToBean<SubscriptionCsv> csvToBean = new CsvToBeanBuilder<SubscriptionCsv>(reader)

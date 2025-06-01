@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>best-insurance-oauth2-server</artifactId>
+    <packaging>war</packaging>
 
     <dependencies>
         <dependency>
@@ -29,6 +30,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <imageName>davidabidoye/best-insurance-oauth2-server</imageName>
+                </configuration>
             </plugin>
         </plugins>
     </build>
