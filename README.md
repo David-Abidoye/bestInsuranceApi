@@ -142,17 +142,25 @@ The project includes sample data for countries, states, cities, customers, polic
 ## Security
 This project secures the API using OAuth 2.0 with JWT tokens:
 
-- OAuth2 Authorization Server (`best-insurance-oauth2-server`): Issues JWT tokens after successful login.
+- OAuth2 Authorisation Server (`best-insurance-oauth2-server`): Issues JWT tokens after successful login.
 - Resource Server (`best-insurance-api`): The backend API that validates the JWT tokens before allowing access to protected resources.  It ensures that only authorized clients can access the data.
 - Client: Any client application (e.g., Swagger UI, Postman, or frontend clients) that authenticates using OAuth2 to obtain access tokens and interacts with the resource server on behalf of the user.
 
 #### The authentication flow works as follows:
 
 1. Client Request: The client requests access to a protected resource from the resource server.
-2. Token Validation: If no JWT token is found in the request, the client is redirected to the OAuth2 Authorization Server for authentication.
-3. Login and Token Exchange: The client logs in with valid credentials and receives an authorization code. The client then exchanges this code for a JWT token from the authorization server.
-4. Token Submission: The client includes the JWT token in the Authorization header when making requests to the resource server.
+2. Token Validation: If no JWT token is found in the request, the client is redirected to the OAuth2 Authorisation Server for authentication.
+3. Login and Token Exchange: The client logs in with valid credentials and receives an authorisation code. The client then exchanges this code for a JWT token from the authorization server.
+4. Token Submission: The client includes the JWT token in the Authorisation header when making requests to the resource server.
 5. Token Validation by Resource Server: The resource server validates the JWT token's integrity and user details before granting access to the requested resource.
+
+#### Client Authentication Credentials
+To authenticate and obtain access tokens, the client application must provide the following credentials to the authorization server:
+
+- **Client ID**: `bestInsurance-client`
+- **Client Secret**: `secret`
+
+These credentials are used to authenticate the client application and ensure that only authorised clients can request tokens on behalf of users.
 
 #### User Roles, Permissions, and Registered Users
 The project defines several user roles, each with different access levels to the API. The following users are pre-registered with the OAuth2 authorization server, each assigned a specific role. These users authenticate with the password `password` and can grant permission to a client application (e.g., Swagger UI or Postman) to access the API on their behalf.
@@ -161,7 +169,7 @@ The project defines several user roles, each with different access levels to the
 - admin (ADMIN): Full access to all services and resources.
 - front_office_user (FRONT_OFFICE): Access to customer-facing services, such as viewing and managing customer data.
 - back_office_user (BACK_OFFICE): Access to employee-facing services, such as managing policies and subscriptions.
-- customer (CUSTOMER): Limited access, allowing customers to access and update their own data.
+- customer (CUSTOMER): Limited access, allowing customers to access and update their data.
 
 Each of these users can authenticate and, upon successful login, grant the client application the ability to obtain a JWT token, which can then be used to access protected resources according to their assigned roles and permissions. Users with different roles (e.g., `ADMIN`, `FRONT_OFFICE`, etc.) can access different sets of endpoints.
 
